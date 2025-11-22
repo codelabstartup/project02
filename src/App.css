@@ -1,0 +1,9 @@
+:root {
+  --layout-padding: 40px;
+}
+
+@media (max-width: 780px) {
+  :root {
+    --layout-padding: 20px;
+  }
+}

@@ -6,12 +6,36 @@ export default function HeaderWrapper() {
   return (
     <HeaderRoot>
       <HeaderWrap1>
-        <Typography component={Link} to="/">
+        <Typography
+          component={Link}
+          to="/"
+          sx={{
+            textDecoration: "none", // 언더라인 제거
+            color: "#2E4F21", // 부모 색상 사용
+            "&:hover": {
+              cursor: "pointer",
+              textDecoration: "none",
+              color: "#333", // 원하는 hover 색상
+            },
+          }}
+        >
           HOME
         </Typography>
       </HeaderWrap1>
       <HeaderWrap2>
-        <Typography component={Link} to="/about">
+        <Typography
+          component={Link}
+          to="/about"
+          sx={{
+            textDecoration: "none", // 언더라인 제거
+            color: "#2E4F21", // 부모 색상 사용
+            "&:hover": {
+              cursor: "pointer",
+              textDecoration: "none",
+              color: "#333", // 원하는 hover 색상
+            },
+          }}
+        >
           ABOUT
         </Typography>
       </HeaderWrap2>
@@ -26,7 +50,6 @@ const HeaderRoot = styled.div`
   align-items: center;
   height: 50px;
   background-color: #a0f1bd;
-  padding: 1em;
   margin: auto;
 `;
 
