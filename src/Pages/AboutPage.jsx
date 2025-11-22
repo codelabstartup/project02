@@ -1,10 +1,10 @@
-import { Typography } from "@mui/material";
+import { Box, Typography } from "@mui/material";
 import styled from "@emotion/styled";
 
-export default function HomePage() {
+export default function AboutPage() {
   return (
     <Container>
-      <Typography>Home</Typography>
+      <Typography>About</Typography>
     </Container>
   );
 }

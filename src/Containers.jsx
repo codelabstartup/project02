@@ -1,10 +1,18 @@
 import { Routes, Route } from "react-router-dom";
-import { Container } from "@mui/material";
-import styled from "styled-components";
-import HeaderWrapper from "./Header/HeaderWrapper";
+import styled from "@emotion/styled";
+import HeaderWrapper from "./Components/HeaderWrapper";
 import HomePage from "./Pages/HomePage";
+import AboutPage from "./Pages/AboutPage";
+import Footer from "./Components/Footer";
 
-const RoutesWrapper = styled.div``;
+const Container = styled.div`
+  width: 100%;
+  max-width: 1280px;
+  margin: auto;
+`;
+const RoutesWrapper = styled.div`
+  width: 100%;
+`;
 
 export default function Containers() {
   return (
@@ -16,6 +24,7 @@ export default function Containers() {
           <Route path="/about" element={<AboutPage />} />
         </Routes>
       </RoutesWrapper>
+      <Footer />
     </Container>
   );
 }

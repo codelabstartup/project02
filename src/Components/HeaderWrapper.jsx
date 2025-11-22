@@ -1,12 +1,13 @@
 import { Typography } from "@mui/material";
-import styled from "styled-components";
+import { Link } from "react-router-dom";
+import styled from "@emotion/styled";
 
 export default function HeaderWrapper() {
   return (
     <HeaderRoot>
       <HeaderWrap1>
         <Typography component={Link} to="/">
-          Home
+          HOME
         </Typography>
       </HeaderWrap1>
       <HeaderWrap2>
@@ -19,10 +20,14 @@ export default function HeaderWrapper() {
 }
 
 const HeaderRoot = styled.div`
+  width: 100%;
   display: flex;
   justify-content: space-between;
   align-items: center;
-  width: 100px;
+  height: 50px;
+  background-color: #a0f1bd;
+  padding: 1em;
+  margin: auto;
 `;
 
 const HeaderWrap1 = styled.div``;
