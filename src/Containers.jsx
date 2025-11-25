@@ -3,6 +3,7 @@ import styled from "@emotion/styled";
 import HeaderWrapper from "./Components/HeaderWrapper";
 import HomePage from "./Pages/HomePage";
 import AboutPage from "./Pages/AboutPage";
+import ResultPage from "./Pages/ResultPage";
 import Footer from "./Components/Footer";
 
 const Container = styled.div`
@@ -22,6 +23,7 @@ export default function Containers() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/about" element={<AboutPage />} />
+          <Route path="/result" element={<ResultPage />} />
         </Routes>
       </RoutesWrapper>
       <Footer />

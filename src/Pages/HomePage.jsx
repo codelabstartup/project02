@@ -16,56 +16,78 @@ export default function HomePage() {
             서울지역 상권 추천 서비스
           </Typography>
           <Typography variant="h6" gutterBottom>
-            조회할 행정동과 업종을 선택하세요.
+            모든 항목을 선택하세요.
           </Typography>
         </ContentWrap>
         <FormWrap>
-          <FormControl sx={{ width: "32%" }}>
-            <InputLabel variant="standard" htmlFor="selected-dong">
-              동 선택
-            </InputLabel>
-            <NativeSelect
-              defaultValue={"동을 선택하세요."}
-              inputProps={{
-                name: "dong",
-                id: "selected-dong",
+          <SelectForm>
+            <FormControl sx={{ width: "50%" }}>
+              <InputLabel variant="standard" htmlFor="selected-gu">
+                구 선택
+              </InputLabel>
+              <NativeSelect
+                defaultValue={"구를 선택하세요."}
+                inputProps={{
+                  name: "gu",
+                  id: "selected-gu",
+                }}
+              >
+                {guList.map((item) => (
+                  <option key={item.value} value={item.value}>
+                    {item.label}
+                  </option>
+                ))}
+              </NativeSelect>
+            </FormControl>
+            <FormControl sx={{ width: "50%" }}>
+              <InputLabel variant="standard" htmlFor="selected-dong">
+                동 선택
+              </InputLabel>
+              <NativeSelect
+                defaultValue={"동을 선택하세요."}
+                inputProps={{
+                  name: "dong",
+                  id: "selected-dong",
+                }}
+              >
+                {dongList.map((item) => (
+                  <option key={item.value} value={item.value}>
+                    {item.label}
+                  </option>
+                ))}
+              </NativeSelect>
+            </FormControl>
+          </SelectForm>
+          <SearchForm>
+            <FormControl sx={{ width: "50%" }}>
+              <InputLabel variant="standard" htmlFor="selected-categorynative">
+                업종 선택
+              </InputLabel>
+              <NativeSelect
+                defaultValue={"업종을 선택하세요."}
+                inputProps={{
+                  name: "category",
+                  id: "selected-categorynative",
+                }}
+              >
+                {categoryList.map((item) => (
+                  <option key={item.value} value={item.value}>
+                    {item.label}
+                  </option>
+                ))}
+              </NativeSelect>
+            </FormControl>
+            <Button
+              variant="contained"
+              sx={{
+                width: "26%",
+                backgroundColor: "#2E4F21",
+                borderRadius: "25px",
               }}
             >
-              {dongList.map((item) => (
-                <option key={item.value} value={item.value}>
-                  {item.label}
-                </option>
-              ))}
-            </NativeSelect>
-          </FormControl>
-          <FormControl sx={{ width: "42%" }}>
-            <InputLabel variant="standard" htmlFor="selected-categorynative">
-              업종 선택
-            </InputLabel>
-            <NativeSelect
-              defaultValue={"업종을 선택하세요."}
-              inputProps={{
-                name: "category",
-                id: "selected-categorynative",
-              }}
-            >
-              {categoryList.map((item) => (
-                <option key={item.value} value={item.value}>
-                  {item.label}
-                </option>
-              ))}
-            </NativeSelect>
-          </FormControl>
-          <Button
-            variant="contained"
-            sx={{
-              width: "26%",
-              backgroundColor: "#2E4F21",
-              borderRadius: "25px",
-            }}
-          >
-            조회하기
-          </Button>
+              조회하기
+            </Button>
+          </SearchForm>
         </FormWrap>
       </SearchWrapper>
       <MapWrapper>
@@ -102,8 +124,14 @@ const ContentWrap = styled.section`
   padding: 2em;
 `;
 const FormWrap = styled.div`
-  display: flex;
   padding: 2em;
+`;
+const SelectForm = styled.div`
+  margin-bottom: 2em;
+`;
+const SearchForm = styled.div`
+  display: flex;
+  justify-content: space-between;
 `;
 const MapWrapper = styled.div`
   width: 100%;
@@ -112,6 +140,35 @@ const MapWrap = styled.div`
   margin-top: 3em;
   padding: 2em;
 `;
+
+const guList = [
+  { value: "0", label: "구를 선택하세요" },
+  { value: "1", label: "강남구" },
+  { value: "2", label: "강동구" },
+  { value: "3", label: "강북구" },
+  { value: "4", label: "강서구" },
+  { value: "5", label: "관악구" },
+  { value: "6", label: "광진구" },
+  { value: "7", label: "구로구" },
+  { value: "8", label: "금천구" },
+  { value: "9", label: "노원구" },
+  { value: "10", label: "도봉구" },
+  { value: "11", label: "동대문구" },
+  { value: "12", label: "동작구" },
+  { value: "13", label: "마포구" },
+  { value: "14", label: "서대문구" },
+  { value: "15", label: "서초구" },
+  { value: "16", label: "성동구" },
+  { value: "17", label: "성북구" },
+  { value: "18", label: "송파구" },
+  { value: "19", label: "양천구" },
+  { value: "20", label: "영등포구" },
+  { value: "21", label: "용산구" },
+  { value: "22", label: "은평구" },
+  { value: "23", label: "종로구" },
+  { value: "24", label: "중구" },
+  { value: "25", label: "중랑구" },
+];
 
 const dongList = [
   { value: "1", label: "동을 선택하세요" },
