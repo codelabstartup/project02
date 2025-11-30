@@ -4,11 +4,27 @@ import {
   InputLabel,
   NativeSelect,
   Button,
-} from "@mui/material"
-import { Link } from "react-router-dom"
-import styled from "@emotion/styled"
+} from "@mui/material";
+import { Link } from "react-router-dom";
+import styled from "@emotion/styled";
+import Map from "../Components/kakaomap/Map";
+import { useState } from "react";
 
 export default function HomePage() {
+  const [selectedGu, setSelectedGu] = useState("");
+  const [selectedDong, setSelectedDong] = useState("");
+
+  const handleGuChange = (e) => {
+    const value = e.target.value;
+    setSelectedGu(value);
+    setSelectedDong("");
+  };
+
+  const handleDongChange = (e) => {
+    const value = e.target.value;
+    setSelectedDong(value);
+  };
+
   return (
     <Container>
       <SearchWrapper>
@@ -27,38 +43,42 @@ export default function HomePage() {
                 구 선택
               </InputLabel>
               <NativeSelect
-                defaultValue={"구를 선택하세요."}
+                value={selectedGu}
+                onChange={handleGuChange}
                 inputProps={{
                   name: "gu",
                   id: "selected-gu",
                 }}
               >
                 {guList.map((item) => (
-                  <option key={item.value} value={item.value}>
+                  <option key={item.value} value={item.label}>
                     {item.label}
                   </option>
                 ))}
               </NativeSelect>
             </FormControl>
+
             <FormControl sx={{ width: "50%" }}>
               <InputLabel variant="standard" htmlFor="selected-dong">
                 동 선택
               </InputLabel>
               <NativeSelect
-                defaultValue={"동을 선택하세요."}
+                value={selectedDong}
+                onChange={handleDongChange}
                 inputProps={{
                   name: "dong",
                   id: "selected-dong",
                 }}
               >
                 {dongList.map((item) => (
-                  <option key={item.value} value={item.value}>
+                  <option key={item.value} value={item.label}>
                     {item.label}
                   </option>
                 ))}
               </NativeSelect>
             </FormControl>
           </SelectForm>
+
           <SearchForm>
             <FormControl sx={{ width: "50%" }}>
               <InputLabel variant="standard" htmlFor="selected-categorynative">
@@ -95,19 +115,11 @@ export default function HomePage() {
       </SearchWrapper>
       <MapWrapper>
         <MapWrap>
-          <img
-            src="src/imgs/sdg.png"
-            style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover", // div에 꽉 차게
-              objectPosition: "center",
-            }}
-          />
+          <Map gu={selectedGu} dong={selectedDong} />
         </MapWrap>
       </MapWrapper>
     </Container>
-  )
+  );
 }
 
 const Container = styled.div`
@@ -118,60 +130,60 @@ const Container = styled.div`
   @media (max-width: 780px) {
     flex-direction: column;
   }
-`
+`;
 const SearchWrapper = styled.div`
   width: 100%;
-`
+`;
 const ContentWrap = styled.section`
   margin-top: 3em;
   padding: 2em;
-`
+`;
 const FormWrap = styled.div`
   padding: 2em;
-`
+`;
 const SelectForm = styled.div`
   margin-bottom: 2em;
-`
+`;
 const SearchForm = styled.div`
   display: flex;
   justify-content: space-between;
-`
+`;
 const MapWrapper = styled.div`
   width: 100%;
-`
+`;
 const MapWrap = styled.div`
   margin-top: 3em;
   padding: 2em;
-`
+`;
 
 const guList = [
   { value: "0", label: "구를 선택하세요" },
-  { value: "1", label: "강남구" },
-  { value: "2", label: "강동구" },
-  { value: "3", label: "강북구" },
-  { value: "4", label: "강서구" },
-  { value: "5", label: "관악구" },
-  { value: "6", label: "광진구" },
-  { value: "7", label: "구로구" },
-  { value: "8", label: "금천구" },
-  { value: "9", label: "노원구" },
-  { value: "10", label: "도봉구" },
-  { value: "11", label: "동대문구" },
-  { value: "12", label: "동작구" },
-  { value: "13", label: "마포구" },
-  { value: "14", label: "서대문구" },
-  { value: "15", label: "서초구" },
-  { value: "16", label: "성동구" },
-  { value: "17", label: "성북구" },
-  { value: "18", label: "송파구" },
-  { value: "19", label: "양천구" },
-  { value: "20", label: "영등포구" },
-  { value: "21", label: "용산구" },
-  { value: "22", label: "은평구" },
-  { value: "23", label: "종로구" },
-  { value: "24", label: "중구" },
-  { value: "25", label: "중랑구" },
-]
+  { value: "강남구", label: "강남구" },
+  { value: "강동구", label: "강동구" },
+  { value: "강북구", label: "강북구" },
+  { value: "강서구", label: "강서구" },
+  { value: "관악구", label: "관악구" },
+  { value: "광진구", label: "광진구" },
+  { value: "구로구", label: "구로구" },
+  { value: "금천구", label: "금천구" },
+  { value: "노원구", label: "노원구" },
+  { value: "도봉구", label: "도봉구" },
+  { value: "동대문구", label: "동대문구" },
+  { value: "동작구", label: "동작구" },
+  { value: "마포구", label: "마포구" },
+  { value: "서대문구", label: "서대문구" },
+  { value: "서초구", label: "서초구" },
+  { value: "성동구", label: "성동구" },
+  { value: "성북구", label: "성북구" },
+  { value: "송파구", label: "송파구" },
+  { value: "양천구", label: "양천구" },
+  { value: "영등포구", label: "영등포구" },
+  { value: "용산구", label: "용산구" },
+  { value: "은평구", label: "은평구" },
+  { value: "종로구", label: "종로구" },
+  { value: "중구", label: "중구" },
+  { value: "중랑구", label: "중랑구" },
+];
 
 const dongList = [
   { value: "1", label: "동을 선택하세요" },
@@ -192,7 +204,7 @@ const dongList = [
   { value: "150", label: "응봉동" },
   { value: "160", label: "행당1동" },
   { value: "170", label: "행당2동" },
-]
+];
 
 const categoryList = [
   { value: "2", label: "업종을 선택하세요" },
@@ -258,4 +270,4 @@ const categoryList = [
   { value: "bh", label: "화장품" },
   { value: "bi", label: "화초" },
   { value: "bj", label: "PC방" },
-]
+];
