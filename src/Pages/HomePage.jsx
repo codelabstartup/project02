@@ -8,11 +8,42 @@ import {
 import { Link } from "react-router-dom";
 import styled from "@emotion/styled";
 import Map from "../Components/kakaomap/Map";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export default function HomePage() {
   const [selectedGu, setSelectedGu] = useState("");
   const [selectedDong, setSelectedDong] = useState("");
+  const [guList, setGuList] = useState([]); // DB에서 가져오는 구 리스트
+  const [dongList, setDongList] = useState([]); // 선택된 구의 동 리스트
+
+  useEffect(() => {
+    fetch("http://127.0.0.1:8000")
+      .then((res) => res.json())
+      .then((data) => {
+        console.log("gu API response:", data); // ✅ 실제 데이터 확인
+
+        setGuList(data);
+      })
+      .catch((err) => {
+        console.error("Failed to load gu list", err);
+      });
+  }, []);
+
+  useEffect(() => {
+    if (!selectedGu) {
+      setDongList([]);
+      return;
+    }
+
+    fetch(`http://127.0.0.1:8000?gu=${encodeURIComponent(selectedGu)}`)
+      .then((res) => res.json())
+      .then((data) => {
+        setDongList(data);
+      })
+      .catch((err) => {
+        console.error("Failed to load dong list", err);
+      });
+  }, [selectedGu]);
 
   const handleGuChange = (e) => {
     const value = e.target.value;
@@ -50,9 +81,10 @@ export default function HomePage() {
                   id: "selected-gu",
                 }}
               >
+                <option value="">구를 선택하세요</option>
                 {guList.map((item) => (
-                  <option key={item.value} value={item.label}>
-                    {item.label}
+                  <option key={item.gu_id} value={item.gu_name}>
+                    {item.gu_name}
                   </option>
                 ))}
               </NativeSelect>
@@ -70,9 +102,10 @@ export default function HomePage() {
                   id: "selected-dong",
                 }}
               >
+                <option value="">동을 선택하세요</option>
                 {dongList.map((item) => (
-                  <option key={item.value} value={item.label}>
-                    {item.label}
+                  <option key={item.dong_id} value={item.dong_name}>
+                    {item.dong_name}
                   </option>
                 ))}
               </NativeSelect>
@@ -156,55 +189,55 @@ const MapWrap = styled.div`
   padding: 2em;
 `;
 
-const guList = [
-  { value: "0", label: "구를 선택하세요" },
-  { value: "강남구", label: "강남구" },
-  { value: "강동구", label: "강동구" },
-  { value: "강북구", label: "강북구" },
-  { value: "강서구", label: "강서구" },
-  { value: "관악구", label: "관악구" },
-  { value: "광진구", label: "광진구" },
-  { value: "구로구", label: "구로구" },
-  { value: "금천구", label: "금천구" },
-  { value: "노원구", label: "노원구" },
-  { value: "도봉구", label: "도봉구" },
-  { value: "동대문구", label: "동대문구" },
-  { value: "동작구", label: "동작구" },
-  { value: "마포구", label: "마포구" },
-  { value: "서대문구", label: "서대문구" },
-  { value: "서초구", label: "서초구" },
-  { value: "성동구", label: "성동구" },
-  { value: "성북구", label: "성북구" },
-  { value: "송파구", label: "송파구" },
-  { value: "양천구", label: "양천구" },
-  { value: "영등포구", label: "영등포구" },
-  { value: "용산구", label: "용산구" },
-  { value: "은평구", label: "은평구" },
-  { value: "종로구", label: "종로구" },
-  { value: "중구", label: "중구" },
-  { value: "중랑구", label: "중랑구" },
-];
+// const guList = [
+//   { value: "0", label: "구를 선택하세요" },
+//   { value: "강남구", label: "강남구" },
+//   { value: "강동구", label: "강동구" },
+//   { value: "강북구", label: "강북구" },
+//   { value: "강서구", label: "강서구" },
+//   { value: "관악구", label: "관악구" },
+//   { value: "광진구", label: "광진구" },
+//   { value: "구로구", label: "구로구" },
+//   { value: "금천구", label: "금천구" },
+//   { value: "노원구", label: "노원구" },
+//   { value: "도봉구", label: "도봉구" },
+//   { value: "동대문구", label: "동대문구" },
+//   { value: "동작구", label: "동작구" },
+//   { value: "마포구", label: "마포구" },
+//   { value: "서대문구", label: "서대문구" },
+//   { value: "서초구", label: "서초구" },
+//   { value: "성동구", label: "성동구" },
+//   { value: "성북구", label: "성북구" },
+//   { value: "송파구", label: "송파구" },
+//   { value: "양천구", label: "양천구" },
+//   { value: "영등포구", label: "영등포구" },
+//   { value: "용산구", label: "용산구" },
+//   { value: "은평구", label: "은평구" },
+//   { value: "종로구", label: "종로구" },
+//   { value: "중구", label: "중구" },
+//   { value: "중랑구", label: "중랑구" },
+// ];
 
-const dongList = [
-  { value: "1", label: "동을 선택하세요" },
-  { value: "10", label: "금호1가동" },
-  { value: "20", label: "금호2·3가동" },
-  { value: "30", label: "금호4가동" },
-  { value: "40", label: "마장동" },
-  { value: "50", label: "사근동" },
-  { value: "60", label: "성수1가1동" },
-  { value: "70", label: "성수1가2동" },
-  { value: "80", label: "성수2가1동" },
-  { value: "90", label: "성수2가3동" },
-  { value: "100", label: "송정동" },
-  { value: "110", label: "옥수동" },
-  { value: "120", label: "왕십리2동" },
-  { value: "130", label: "왕십리도선동" },
-  { value: "140", label: "용답동" },
-  { value: "150", label: "응봉동" },
-  { value: "160", label: "행당1동" },
-  { value: "170", label: "행당2동" },
-];
+// const dongList = [
+//   { value: "1", label: "동을 선택하세요" },
+//   { value: "10", label: "금호1가동" },
+//   { value: "20", label: "금호2·3가동" },
+//   { value: "30", label: "금호4가동" },
+//   { value: "40", label: "마장동" },
+//   { value: "50", label: "사근동" },
+//   { value: "60", label: "성수1가1동" },
+//   { value: "70", label: "성수1가2동" },
+//   { value: "80", label: "성수2가1동" },
+//   { value: "90", label: "성수2가3동" },
+//   { value: "100", label: "송정동" },
+//   { value: "110", label: "옥수동" },
+//   { value: "120", label: "왕십리2동" },
+//   { value: "130", label: "왕십리도선동" },
+//   { value: "140", label: "용답동" },
+//   { value: "150", label: "응봉동" },
+//   { value: "160", label: "행당1동" },
+//   { value: "170", label: "행당2동" },
+// ];
 
 const categoryList = [
   { value: "2", label: "업종을 선택하세요" },
