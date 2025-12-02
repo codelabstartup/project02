@@ -25,6 +25,40 @@ export default function HeaderWrapper() {
       <HeaderWrap2>
         <Typography
           component={Link}
+          to="/market"
+          sx={{
+            textDecoration: "none", // 언더라인 제거
+            color: "inherit", // 부모 색상 사용
+            "&:hover": {
+              cursor: "pointer",
+              textDecoration: "none",
+              color: "#333", // 원하는 hover 색상
+            },
+          }}
+        >
+          MARKET
+        </Typography>
+      </HeaderWrap2>
+      <HeaderWrap3>
+        <Typography
+          component={Link}
+          to="/board"
+          sx={{
+            textDecoration: "none", // 언더라인 제거
+            color: "inherit", // 부모 색상 사용
+            "&:hover": {
+              cursor: "pointer",
+              textDecoration: "none",
+              color: "#333", // 원하는 hover 색상
+            },
+          }}
+        >
+          BOARD
+        </Typography>
+      </HeaderWrap3>
+      <HeaderWrap4>
+        <Typography
+          component={Link}
           to="/about"
           sx={{
             textDecoration: "none", // 언더라인 제거
@@ -38,7 +72,7 @@ export default function HeaderWrapper() {
         >
           ABOUT
         </Typography>
-      </HeaderWrap2>
+      </HeaderWrap4>
     </HeaderRoot>
   );
 }
@@ -57,5 +91,11 @@ const HeaderWrap1 = styled.div`
   margin-left: 2em;
 `;
 const HeaderWrap2 = styled.div`
+  margin: 2em 2em;
+`;
+const HeaderWrap3 = styled.div`
+  margin-right: 2em;
+`;
+const HeaderWrap4 = styled.div`
   margin-right: 2em;
 `;
