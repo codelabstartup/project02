@@ -17,7 +17,7 @@ export default function HomePage() {
   const [dongList, setDongList] = useState([]); // 선택된 구의 동 리스트
 
   useEffect(() => {
-    fetch("http://127.0.0.1:8000")
+    fetch("http://127.0.0.1:8000/ai")
       .then((res) => res.json())
       .then((data) => {
         console.log("gu API response:", data); // ✅ 실제 데이터 확인
@@ -35,7 +35,7 @@ export default function HomePage() {
       return;
     }
 
-    fetch(`http://127.0.0.1:8000?gu=${encodeURIComponent(selectedGu)}`)
+    fetch(`http://127.0.0.1:8000/ai?gu=${encodeURIComponent(selectedGu)}`)
       .then((res) => res.json())
       .then((data) => {
         setDongList(data);
