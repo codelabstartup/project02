@@ -4,8 +4,8 @@ import {
   SaleAreaChart,
   SalePieChart,
   SaleComboChart,
-} from "../Components/Chart";
-import styled from "@emotion/styled";
+} from "../Components/Chart"
+import styled from "@emotion/styled"
 
 export default function ResultPage() {
   const data = [
@@ -15,16 +15,16 @@ export default function ResultPage() {
     { name: "Apr", value: 200, pv: 200, uv: 150 },
     { name: "May", value: 350, pv: 180, uv: 160 },
     { name: "Jun", value: 600, pv: 390, uv: 300 },
-  ];
+  ]
   return (
     <Container>
       <ResultWrapper>
         <ResultWrap>
           <ResultContent>
-            <H2>선택하신 00구 00동의 00업종은</H2>
+            <H2>{data}</H2>
           </ResultContent>
           <ResultTitle>
-            <H1>추천</H1>
+            <H1>{data}천</H1>
           </ResultTitle>
         </ResultWrap>
         <ResultImg>
@@ -75,13 +75,13 @@ export default function ResultPage() {
         </CmtContent>
       </CommentWrap>
     </Container>
-  );
+  )
 }
 
 const Container = styled.div`
   width: 100%;
   background-color: #f9f9f9;
-`;
+`
 const ResultWrapper = styled.div`
   display: flex;
   justify-content: space-between;
@@ -90,7 +90,7 @@ const ResultWrapper = styled.div`
   @media (max-width: 780px) {
     flex-direction: column;
   }
-`;
+`
 const ResultWrap = styled.div`
   width: 100%;
   display: flex;
@@ -98,32 +98,32 @@ const ResultWrap = styled.div`
   justify-content: center;
   padding-top: 2em;
   padding-bottom: 2em;
-`;
+`
 const ResultContent = styled.div`
   width: 100%;
-`;
+`
 const H2 = styled.h2`
   text-align: center;
   font-size: 2em;
-`;
+`
 const ResultTitle = styled.div`
   width: 100%;
-`;
+`
 const H1 = styled.h1`
   text-align: center;
   font-size: 3em;
-`;
+`
 const ResultImg = styled.div`
   width: 100%;
-`;
+`
 const ImgBox = styled.div`
   display: flex;
-  justify-content: center; // 가로 가운데
+  justify-content: center;
   align-items: center;
-`;
+`
 const SectionTitle = styled.div`
   padding: 2em 2em 2em 2em;
-`;
+`
 const SelectionWrap = styled.div`
   display: flex;
   padding: 3em 3em;
@@ -131,28 +131,28 @@ const SelectionWrap = styled.div`
   @media (max-width: 780px) {
     flex-direction: column;
   }
-`;
+`
 const SecTitle = styled.div`
   flex: 3;
   font-size: 2em;
-`;
+`
 const SecChart = styled.div`
   flex: 7;
   width: 100%;
-`;
+`
 const CommentWrap = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-`;
+`
 const CmtTitle = styled.div`
   font-size: 1.8em;
   margin-top: 1.5em;
   margin-bottom: 1.5em;
-`;
+`
 const CmtContent = styled.div`
   width: 100%;
-`;
+`
 const CmtBox = styled.div`
   width: 80%;
   background-color: #d2f8dc;
@@ -161,4 +161,4 @@ const CmtBox = styled.div`
   margin: auto;
   margin-bottom: 2em;
   text-align: center;
-`;
+`
