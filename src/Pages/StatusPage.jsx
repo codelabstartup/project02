@@ -1,7 +1,7 @@
 import styled from "@emotion/styled"
 
-export default function BoardPage() {
-  return <Container>"게시판"</Container>
+export default function StatusPage() {
+  return <Container>"마켓현황"</Container>
 }
 
 const Container = styled.div`

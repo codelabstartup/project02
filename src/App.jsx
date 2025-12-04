@@ -1,13 +1,16 @@
-import { BrowserRouter } from "react-router-dom";
-import Containers from "./Containers";
-import "./App.css";
+import { BrowserRouter } from "react-router-dom"
+import Containers from "./Containers"
+import "./App.css"
+import { ResultDataProvider } from "./context/ResultDataContext"
 
 function App() {
   return (
     <BrowserRouter>
-      <Containers />
+      <ResultDataProvider>
+        <Containers />
+      </ResultDataProvider>
     </BrowserRouter>
-  );
+  )
 }
 
-export default App;
+export default App

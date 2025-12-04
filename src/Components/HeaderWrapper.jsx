@@ -1,6 +1,6 @@
-import { Typography } from "@mui/material";
-import { Link } from "react-router-dom";
-import styled from "@emotion/styled";
+import { Typography } from "@mui/material"
+import { Link } from "react-router-dom"
+import styled from "@emotion/styled"
 
 export default function HeaderWrapper() {
   return (
@@ -22,59 +22,44 @@ export default function HeaderWrapper() {
           HOME
         </Typography>
       </HeaderWrap1>
-      <HeaderWrap2>
-        <Typography
-          component={Link}
-          to="/market"
-          sx={{
-            textDecoration: "none", // 언더라인 제거
-            color: "inherit", // 부모 색상 사용
-            "&:hover": {
-              cursor: "pointer",
-              textDecoration: "none",
-              color: "#333", // 원하는 hover 색상
-            },
-          }}
-        >
-          MARKET
-        </Typography>
-      </HeaderWrap2>
-      <HeaderWrap3>
-        <Typography
-          component={Link}
-          to="/board"
-          sx={{
-            textDecoration: "none", // 언더라인 제거
-            color: "inherit", // 부모 색상 사용
-            "&:hover": {
-              cursor: "pointer",
-              textDecoration: "none",
-              color: "#333", // 원하는 hover 색상
-            },
-          }}
-        >
-          BOARD
-        </Typography>
-      </HeaderWrap3>
-      <HeaderWrap4>
-        <Typography
-          component={Link}
-          to="/about"
-          sx={{
-            textDecoration: "none", // 언더라인 제거
-            color: "inherit", // 부모 색상 사용
-            "&:hover": {
-              cursor: "pointer",
-              textDecoration: "none",
-              color: "#333", // 원하는 hover 색상
-            },
-          }}
-        >
-          ABOUT
-        </Typography>
-      </HeaderWrap4>
+      <HeaderBox>
+        <HeaderWrap2>
+          <Typography
+            component={Link}
+            to="/status"
+            sx={{
+              textDecoration: "none", // 언더라인 제거
+              color: "inherit", // 부모 색상 사용
+              "&:hover": {
+                cursor: "pointer",
+                textDecoration: "none",
+                color: "#333", // 원하는 hover 색상
+              },
+            }}
+          >
+            MARKET
+          </Typography>
+        </HeaderWrap2>
+        <HeaderWrap3>
+          <Typography
+            component={Link}
+            to="/board"
+            sx={{
+              textDecoration: "none", // 언더라인 제거
+              color: "inherit", // 부모 색상 사용
+              "&:hover": {
+                cursor: "pointer",
+                textDecoration: "none",
+                color: "#333", // 원하는 hover 색상
+              },
+            }}
+          >
+            BOARD
+          </Typography>
+        </HeaderWrap3>
+      </HeaderBox>
     </HeaderRoot>
-  );
+  )
 }
 
 const HeaderRoot = styled.div`
@@ -85,17 +70,20 @@ const HeaderRoot = styled.div`
   height: 50px;
   background-color: #a0f1bd;
   margin: auto;
-`;
+`
 
 const HeaderWrap1 = styled.div`
   margin-left: 2em;
-`;
+`
+const HeaderBox = styled.div`
+  display: flex;
+`
 const HeaderWrap2 = styled.div`
-  margin: 2em 2em;
-`;
+  margin-right: 2em;
+`
 const HeaderWrap3 = styled.div`
   margin-right: 2em;
-`;
-const HeaderWrap4 = styled.div`
-  margin-right: 2em;
-`;
+`
+// const HeaderWrap4 = styled.div`
+//   margin-right: 2em;
+// `

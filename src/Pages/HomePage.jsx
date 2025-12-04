@@ -4,57 +4,61 @@ import {
   InputLabel,
   NativeSelect,
   Button,
-} from "@mui/material";
-import { Link } from "react-router-dom";
-import styled from "@emotion/styled";
-import Map from "../Components/kakaomap/Map";
-import { useState, useEffect } from "react";
+  Alert,
+} from "@mui/material"
+import { useState } from "react"
+import { useNavigate } from "react-router-dom"
+import styled from "@emotion/styled"
+import Map from "../Components/kakaomap/Map"
+import { useResultData } from "../context/ResultDataContext"
+import axios from "axios"
 
 export default function HomePage() {
-  const [selectedGu, setSelectedGu] = useState("");
-  const [selectedDong, setSelectedDong] = useState("");
-  const [guList, setGuList] = useState([]); // DB에서 가져오는 구 리스트
-  const [dongList, setDongList] = useState([]); // 선택된 구의 동 리스트
+  const [selectedGu, setSelectedGu] = useState("")
+  const [selectedDong, setSelectedDong] = useState("")
+  const [selectedCategory, setSelectedCategory] = useState("")
+  const [loading, setLoading] = useState(false)
 
-  useEffect(() => {
-    fetch("http://127.0.0.1:8000/ai")
-      .then((res) => res.json())
-      .then((data) => {
-        console.log("gu API response:", data); // ✅ 실제 데이터 확인
+  const { setSelection, setAiResult, setDbResult, resetResults } =
+    useResultData()
 
-        setGuList(data);
-      })
-      .catch((err) => {
-        console.error("Failed to load gu list", err);
-      });
-  }, []);
+  const navigate = useNavigate()
 
-  useEffect(() => {
-    if (!selectedGu) {
-      setDongList([]);
-      return;
+  const handleSearchClick = async () => {
+    if (!selectedGu || !selectedDong || !selectedCategory) {
+      alert("구, 동, 업종을 모두 선택해주세요.")
+      return
     }
 
-    fetch(`http://127.0.0.1:8000/ai?gu=${encodeURIComponent(selectedGu)}`)
-      .then((res) => res.json())
-      .then((data) => {
-        setDongList(data);
-      })
-      .catch((err) => {
-        console.error("Failed to load dong list", err);
-      });
-  }, [selectedGu]);
+    const body = {
+      gu: selectedGu,
+      dong: selectedDong,
+      category: selectedCategory,
+    }
 
-  const handleGuChange = (e) => {
-    const value = e.target.value;
-    setSelectedGu(value);
-    setSelectedDong("");
-  };
+    try {
+      setLoading(true)
+      resetResults()
+      setSelection(body)
 
-  const handleDongChange = (e) => {
-    const value = e.target.value;
-    setSelectedDong(value);
-  };
+      const [aiRes, dbRes] = await Promise.all([
+        axios.get("/ai", body),
+        axios.get("/result", body),
+      ])
+
+      // 응답 Provider에 저장
+      setAiResult(aiRes.data)
+      setDbResult(dbRes.data)
+
+      // 저장 후 ResultPage로 이동
+      navigate("/result")
+    } catch (err) {
+      console.error(err)
+      alert("서버 요청 중 오류가 발생했습니다.")
+    } finally {
+      setLoading(false)
+    }
+  }
 
   return (
     <Container>
@@ -75,18 +79,13 @@ export default function HomePage() {
               </InputLabel>
               <NativeSelect
                 value={selectedGu}
-                onChange={handleGuChange}
+                onChange={(e) => setSelectedGu(e.target.value)}
                 inputProps={{
                   name: "gu",
                   id: "selected-gu",
                 }}
               >
-                <option value="">구를 선택하세요</option>
-                {guList.map((item) => (
-                  <option key={item.gu_id} value={item.gu_name}>
-                    {item.gu_name}
-                  </option>
-                ))}
+                <option value=""></option>
               </NativeSelect>
             </FormControl>
 
@@ -96,18 +95,13 @@ export default function HomePage() {
               </InputLabel>
               <NativeSelect
                 value={selectedDong}
-                onChange={handleDongChange}
+                onChange={(e) => setSelectedDong(e.target.value)}
                 inputProps={{
                   name: "dong",
                   id: "selected-dong",
                 }}
               >
-                <option value="">동을 선택하세요</option>
-                {dongList.map((item) => (
-                  <option key={item.dong_id} value={item.dong_name}>
-                    {item.dong_name}
-                  </option>
-                ))}
+                <option value=""></option>
               </NativeSelect>
             </FormControl>
           </SelectForm>
@@ -118,23 +112,20 @@ export default function HomePage() {
                 업종 선택
               </InputLabel>
               <NativeSelect
-                defaultValue={"업종을 선택하세요."}
+                value={selectedCategory}
+                onChange={(e) => setSelectedCategory(e.target.value)}
                 inputProps={{
                   name: "category",
                   id: "selected-categorynative",
                 }}
               >
-                {categoryList.map((item) => (
-                  <option key={item.value} value={item.value}>
-                    {item.label}
-                  </option>
-                ))}
+                <option value=""></option>
               </NativeSelect>
             </FormControl>
             <Button
-              component={Link}
-              to="/result"
+              onClick={handleSearchClick}
               variant="contained"
+              disabled={loading}
               sx={{
                 width: "26%",
                 backgroundColor: "#2E4F21",
@@ -148,11 +139,11 @@ export default function HomePage() {
       </SearchWrapper>
       <MapWrapper>
         <MapWrap>
-          <Map gu={selectedGu} dong={selectedDong} />
+          <Map />
         </MapWrap>
       </MapWrapper>
     </Container>
-  );
+  )
 }
 
 const Container = styled.div`
@@ -163,31 +154,31 @@ const Container = styled.div`
   @media (max-width: 780px) {
     flex-direction: column;
   }
-`;
+`
 const SearchWrapper = styled.div`
   width: 100%;
-`;
+`
 const ContentWrap = styled.section`
   margin-top: 3em;
   padding: 2em;
-`;
+`
 const FormWrap = styled.div`
   padding: 2em;
-`;
+`
 const SelectForm = styled.div`
   margin-bottom: 2em;
-`;
+`
 const SearchForm = styled.div`
   display: flex;
   justify-content: space-between;
-`;
+`
 const MapWrapper = styled.div`
   width: 100%;
-`;
+`
 const MapWrap = styled.div`
   margin-top: 3em;
   padding: 2em;
-`;
+`
 
 // const guList = [
 //   { value: "0", label: "구를 선택하세요" },
@@ -239,68 +230,68 @@ const MapWrap = styled.div`
 //   { value: "170", label: "행당2동" },
 // ];
 
-const categoryList = [
-  { value: "2", label: "업종을 선택하세요" },
-  { value: "a", label: "가구" },
-  { value: "b", label: "가방" },
-  { value: "c", label: "가전제품" },
-  { value: "d", label: "가전제품수리" },
-  { value: "e", label: "고시원" },
-  { value: "f", label: "골프연습장" },
-  { value: "g", label: "네일숍" },
-  { value: "h", label: "노래방" },
-  { value: "i", label: "당구장" },
-  { value: "j", label: "문구" },
-  { value: "k", label: "미곡판매" },
-  { value: "l", label: "미용실" },
-  { value: "m", label: "반찬가게" },
-  { value: "n", label: "분식전문점" },
-  { value: "o", label: "서적" },
-  { value: "p", label: "섬유제품" },
-  { value: "q", label: "세탁소" },
-  { value: "r", label: "수산물판매" },
-  { value: "s", label: "슈퍼마켓" },
-  { value: "t", label: "스포츠 강습" },
-  { value: "u", label: "스포츠클럽" },
-  { value: "v", label: "시계및귀금속" },
-  { value: "w", label: "신발" },
-  { value: "x", label: "안경" },
-  { value: "y", label: "애완동물" },
-  { value: "z", label: "양식음식점" },
-  { value: "aa", label: "여관" },
-  { value: "ab", label: "예술학원" },
-  { value: "ac", label: "완구" },
-  { value: "ad", label: "외국어학원" },
-  { value: "ae", label: "운동/경기용품" },
-  { value: "af", label: "육류판매" },
-  { value: "ag", label: "의료기기" },
-  { value: "ah", label: "의약품" },
-  { value: "ai", label: "인테리어" },
-  { value: "aj", label: "일반교습학원" },
-  { value: "ak", label: "일반의류" },
-  { value: "al", label: "일반의원" },
-  { value: "am", label: "일식음식점" },
-  { value: "an", label: "자동차미용" },
-  { value: "ao", label: "자동차수리" },
-  { value: "ap", label: "자전거 및 기타운송장비" },
-  { value: "aq", label: "전자상거래업" },
-  { value: "ar", label: "제과점" },
-  { value: "as", label: "조명용품" },
-  { value: "at", label: "중식음식점" },
-  { value: "au", label: "철물점" },
-  { value: "av", label: "청과상" },
-  { value: "aw", label: "치과의원" },
-  { value: "ax", label: "치킨전문점" },
-  { value: "ay", label: "커피-음료" },
-  { value: "az", label: "컴퓨터및주변장치판매" },
-  { value: "ba", label: "패스트푸드점" },
-  { value: "bb", label: "편의점" },
-  { value: "bc", label: "피부관리실" },
-  { value: "bd", label: "한식음식점" },
-  { value: "be", label: "한의원" },
-  { value: "bf", label: "핸드폰" },
-  { value: "bg", label: "호프-간이주점" },
-  { value: "bh", label: "화장품" },
-  { value: "bi", label: "화초" },
-  { value: "bj", label: "PC방" },
-];
+// const categoryList = [
+//   { value: "2", label: "업종을 선택하세요" },
+//   { value: "a", label: "가구" },
+//   { value: "b", label: "가방" },
+//   { value: "c", label: "가전제품" },
+//   { value: "d", label: "가전제품수리" },
+//   { value: "e", label: "고시원" },
+//   { value: "f", label: "골프연습장" },
+//   { value: "g", label: "네일숍" },
+//   { value: "h", label: "노래방" },
+//   { value: "i", label: "당구장" },
+//   { value: "j", label: "문구" },
+//   { value: "k", label: "미곡판매" },
+//   { value: "l", label: "미용실" },
+//   { value: "m", label: "반찬가게" },
+//   { value: "n", label: "분식전문점" },
+//   { value: "o", label: "서적" },
+//   { value: "p", label: "섬유제품" },
+//   { value: "q", label: "세탁소" },
+//   { value: "r", label: "수산물판매" },
+//   { value: "s", label: "슈퍼마켓" },
+//   { value: "t", label: "스포츠 강습" },
+//   { value: "u", label: "스포츠클럽" },
+//   { value: "v", label: "시계및귀금속" },
+//   { value: "w", label: "신발" },
+//   { value: "x", label: "안경" },
+//   { value: "y", label: "애완동물" },
+//   { value: "z", label: "양식음식점" },
+//   { value: "aa", label: "여관" },
+//   { value: "ab", label: "예술학원" },
+//   { value: "ac", label: "완구" },
+//   { value: "ad", label: "외국어학원" },
+//   { value: "ae", label: "운동/경기용품" },
+//   { value: "af", label: "육류판매" },
+//   { value: "ag", label: "의료기기" },
+//   { value: "ah", label: "의약품" },
+//   { value: "ai", label: "인테리어" },
+//   { value: "aj", label: "일반교습학원" },
+//   { value: "ak", label: "일반의류" },
+//   { value: "al", label: "일반의원" },
+//   { value: "am", label: "일식음식점" },
+//   { value: "an", label: "자동차미용" },
+//   { value: "ao", label: "자동차수리" },
+//   { value: "ap", label: "자전거 및 기타운송장비" },
+//   { value: "aq", label: "전자상거래업" },
+//   { value: "ar", label: "제과점" },
+//   { value: "as", label: "조명용품" },
+//   { value: "at", label: "중식음식점" },
+//   { value: "au", label: "철물점" },
+//   { value: "av", label: "청과상" },
+//   { value: "aw", label: "치과의원" },
+//   { value: "ax", label: "치킨전문점" },
+//   { value: "ay", label: "커피-음료" },
+//   { value: "az", label: "컴퓨터및주변장치판매" },
+//   { value: "ba", label: "패스트푸드점" },
+//   { value: "bb", label: "편의점" },
+//   { value: "bc", label: "피부관리실" },
+//   { value: "bd", label: "한식음식점" },
+//   { value: "be", label: "한의원" },
+//   { value: "bf", label: "핸드폰" },
+//   { value: "bg", label: "호프-간이주점" },
+//   { value: "bh", label: "화장품" },
+//   { value: "bi", label: "화초" },
+//   { value: "bj", label: "PC방" },
+// ]
