@@ -1,60 +1,76 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef } from "react"
 
-export default function KakaoMap({ gu, dong }) {
-  const mapRef = useRef(null);
-  const geocoderRef = useRef(null);
+export default function Map({ selectedGu, selectedDong }) {
+  const mapRef = useRef(null)
+  const mapInstanceRef = useRef(null)
+  const markerRef = useRef(null)
 
+  // 1. 최초 지도 생성 (level 9)
   useEffect(() => {
-    if (!window.kakao || !window.kakao.maps) return;
-
-    window.kakao.maps.load(() => {
-      const container = document.getElementById("map");
-      const options = {
-        center: new window.kakao.maps.LatLng(37.5665, 126.978), // 서울시청
-        level: 8,
-      };
-
-      const map = new window.kakao.maps.Map(container, options);
-      const geocoder = new window.kakao.maps.services.Geocoder();
-
-      mapRef.current = map;
-      geocoderRef.current = geocoder;
-    });
-  }, []);
-
-  useEffect(() => {
-    const kakao = window.kakao;
-    const map = mapRef.current;
-    const geocoder = geocoderRef.current;
-
-    if (!kakao || !map || !geocoder) return;
-
-    if (!gu || gu === "구를 선택하세요") return;
-
-    let query = `서울특별시 ${gu}`;
-
-    const hasDong = dong && dong !== "동을 선택하세요";
-
-    if (hasDong) {
-      query = `서울특별시 ${gu} ${dong}`;
+    if (!mapRef.current) return
+    const { kakao } = window
+    if (!kakao || !kakao.maps) {
+      console.error("Kakao Maps SDK not loaded")
+      return
     }
 
-    geocoder.addressSearch(query, (result, status) => {
+    kakao.maps.load(() => {
+      const options = {
+        center: new kakao.maps.LatLng(37.5665, 126.978), // 서울 시청 근처
+        level: 9, // ✅ 처음에는 멀리 (전국/서울 전체 느낌)
+      }
+
+      const map = new kakao.maps.Map(mapRef.current, options)
+      mapInstanceRef.current = map
+    })
+  }, [])
+
+  // 2. 구 / 동 선택 시 지도 이동 + 줌 조절
+  useEffect(() => {
+    const { kakao } = window
+    const map = mapInstanceRef.current
+    if (!kakao || !kakao.maps || !map) return
+
+    // 아무것도 선택 안 했으면 그냥 둠
+    if (!selectedGu && !selectedDong) return
+
+    const geocoder = new kakao.maps.services.Geocoder()
+
+    // 동이 있으면 구+동, 없으면 구만 검색
+    const keyword = selectedDong
+      ? `서울특별시 ${selectedGu} ${selectedDong}`
+      : `서울특별시 ${selectedGu}`
+
+    geocoder.addressSearch(keyword, (result, status) => {
       if (status === kakao.maps.services.Status.OK) {
-        const coords = new kakao.maps.LatLng(result[0].y, result[0].x);
+        const coords = new kakao.maps.LatLng(result[0].y, result[0].x)
 
-        map.setCenter(coords);
+        // 지도 중심 이동
+        map.setCenter(coords)
 
-        if (hasDong) {
-          map.setLevel(5);
+        // ✅ 줌 레벨 조절 로직
+        if (selectedDong) {
+          // 동까지 선택된 경우: 더 확대
+          map.setLevel(5) // 필요하면 4, 6 등으로 조정해봐도 됨
+        } else if (selectedGu) {
+          // 구만 선택된 경우: 구 기준으로 꽤 확대
+          map.setLevel(7)
+        }
+
+        // 마커 위치 설정
+        if (markerRef.current) {
+          markerRef.current.setPosition(coords)
         } else {
-          map.setLevel(5);
+          markerRef.current = new kakao.maps.Marker({
+            map,
+            position: coords,
+          })
         }
       } else {
-        console.warn("주소 검색 실패:", query, status);
+        console.warn("Geocoding failed:", status)
       }
-    });
-  }, [gu, dong]);
+    })
+  }, [selectedGu, selectedDong])
 
-  return <div id="map" style={{ width: "100%", height: "500px" }} />;
+  return <div ref={mapRef} style={{ width: "100%", height: "400px" }} />
 }

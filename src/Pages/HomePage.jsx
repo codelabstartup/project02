@@ -4,9 +4,8 @@ import {
   InputLabel,
   NativeSelect,
   Button,
-  Alert,
 } from "@mui/material"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
 import styled from "@emotion/styled"
 import Map from "../Components/kakaomap/Map"
@@ -18,9 +17,69 @@ export default function HomePage() {
   const [selectedDong, setSelectedDong] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("")
   const [loading, setLoading] = useState(false)
+  const [guList, setGuList] = useState([])
+  const [dongList, setDongList] = useState([])
+  const [categoryList, setCategoryList] = useState([])
 
   const { setSelection, setAiResult, setDbResult, resetResults } =
     useResultData()
+
+  useEffect(() => {
+    const fetchGu = async () => {
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/gu`)
+        setGuList(res.data)
+      } catch (err) {
+        console.error(err)
+      }
+    }
+
+    fetchGu()
+  }, [])
+
+  useEffect(() => {
+    if (!selectedGu) {
+      setDongList([])
+      setSelectedDong("")
+      return
+    }
+
+    const fetchDong = async () => {
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/gu/dong`, {
+          params: { gu: selectedGu }, // 쿼리 파라미터로 구 보내기
+        })
+        setDongList(res.data)
+      } catch (err) {
+        console.error(err)
+        setDongList([])
+      }
+    }
+
+    fetchDong()
+  }, [selectedGu])
+
+  useEffect(() => {
+    const fetchCategory = async () => {
+      try {
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/category`)
+        setCategoryList(res.data)
+      } catch (err) {
+        console.error(err)
+      }
+    }
+
+    fetchCategory()
+  }, [])
+
+  const handleGuChange = (e) => {
+    const value = e.target.value
+    setSelectedGu(value)
+    setSelectedDong("")
+  }
+  const handleCategoryChange = (e) => {
+    setSelectedCategory(e.target.value)
+  }
 
   const navigate = useNavigate()
 
@@ -42,8 +101,8 @@ export default function HomePage() {
       setSelection(body)
 
       const [aiRes, dbRes] = await Promise.all([
-        axios.get("/ai", body),
-        axios.get("/result", body),
+        axios.get("/ai", { params: body }),
+        axios.get("/result", { params: body }),
       ])
 
       // 응답 Provider에 저장
@@ -59,7 +118,6 @@ export default function HomePage() {
       setLoading(false)
     }
   }
-
   return (
     <Container>
       <SearchWrapper>
@@ -77,15 +135,13 @@ export default function HomePage() {
               <InputLabel variant="standard" htmlFor="selected-gu">
                 구 선택
               </InputLabel>
-              <NativeSelect
-                value={selectedGu}
-                onChange={(e) => setSelectedGu(e.target.value)}
-                inputProps={{
-                  name: "gu",
-                  id: "selected-gu",
-                }}
-              >
+              <NativeSelect value={selectedGu} onChange={handleGuChange}>
                 <option value=""></option>
+                {guList.map((gu) => (
+                  <option key={gu} value={gu}>
+                    {gu}
+                  </option>
+                ))}
               </NativeSelect>
             </FormControl>
 
@@ -96,12 +152,13 @@ export default function HomePage() {
               <NativeSelect
                 value={selectedDong}
                 onChange={(e) => setSelectedDong(e.target.value)}
-                inputProps={{
-                  name: "dong",
-                  id: "selected-dong",
-                }}
               >
                 <option value=""></option>
+                {dongList.map((dong) => (
+                  <option key={dong} value={dong}>
+                    {dong}
+                  </option>
+                ))}
               </NativeSelect>
             </FormControl>
           </SelectForm>
@@ -113,13 +170,14 @@ export default function HomePage() {
               </InputLabel>
               <NativeSelect
                 value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                inputProps={{
-                  name: "category",
-                  id: "selected-categorynative",
-                }}
+                onChange={handleCategoryChange}
               >
                 <option value=""></option>
+                {categoryList.map((category) => (
+                  <option key={category} value={category}>
+                    {category}
+                  </option>
+                ))}
               </NativeSelect>
             </FormControl>
             <Button
@@ -139,7 +197,7 @@ export default function HomePage() {
       </SearchWrapper>
       <MapWrapper>
         <MapWrap>
-          <Map />
+          <Map selectedGu={selectedGu} selectedDong={selectedDong} />
         </MapWrap>
       </MapWrapper>
     </Container>
