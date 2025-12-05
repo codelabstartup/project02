@@ -5,7 +5,6 @@ export default function Map({ selectedGu, selectedDong }) {
   const mapInstanceRef = useRef(null)
   const markerRef = useRef(null)
 
-  // 1. 최초 지도 생성 (level 9)
   useEffect(() => {
     if (!mapRef.current) return
     const { kakao } = window
@@ -17,7 +16,7 @@ export default function Map({ selectedGu, selectedDong }) {
     kakao.maps.load(() => {
       const options = {
         center: new kakao.maps.LatLng(37.5665, 126.978), // 서울 시청 근처
-        level: 9, // ✅ 처음에는 멀리 (전국/서울 전체 느낌)
+        level: 9,
       }
 
       const map = new kakao.maps.Map(mapRef.current, options)
@@ -25,7 +24,6 @@ export default function Map({ selectedGu, selectedDong }) {
     })
   }, [])
 
-  // 2. 구 / 동 선택 시 지도 이동 + 줌 조절
   useEffect(() => {
     const { kakao } = window
     const map = mapInstanceRef.current
@@ -45,15 +43,11 @@ export default function Map({ selectedGu, selectedDong }) {
       if (status === kakao.maps.services.Status.OK) {
         const coords = new kakao.maps.LatLng(result[0].y, result[0].x)
 
-        // 지도 중심 이동
         map.setCenter(coords)
 
-        // ✅ 줌 레벨 조절 로직
         if (selectedDong) {
-          // 동까지 선택된 경우: 더 확대
           map.setLevel(5) // 필요하면 4, 6 등으로 조정해봐도 됨
         } else if (selectedGu) {
-          // 구만 선택된 경우: 구 기준으로 꽤 확대
           map.setLevel(7)
         }
 
