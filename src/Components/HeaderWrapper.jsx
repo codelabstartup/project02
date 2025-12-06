@@ -1,6 +1,6 @@
-import { Typography } from "@mui/material"
-import { Link } from "react-router-dom"
-import styled from "@emotion/styled"
+import { Typography } from "@mui/material";
+import { Link } from "react-router-dom";
+import styled from "@emotion/styled";
 
 export default function HeaderWrapper() {
   return (
@@ -59,31 +59,35 @@ export default function HeaderWrapper() {
         </HeaderWrap3>
       </HeaderBox>
     </HeaderRoot>
-  )
+  );
 }
 
 const HeaderRoot = styled.div`
   width: 100%;
+  max-width: 1280px;
   display: flex;
   justify-content: space-between;
   align-items: center;
   height: 50px;
+  position: fixed;
+  top: 0;
+  z-index: 999;
   background-color: #a0f1bd;
   margin: auto;
-`
+`;
 
 const HeaderWrap1 = styled.div`
   margin-left: 2em;
-`
+`;
 const HeaderBox = styled.div`
   display: flex;
-`
+`;
 const HeaderWrap2 = styled.div`
   margin-right: 2em;
-`
+`;
 const HeaderWrap3 = styled.div`
   margin-right: 2em;
-`
+`;
 // const HeaderWrap4 = styled.div`
 //   margin-right: 2em;
 // `

@@ -4,120 +4,121 @@ import {
   InputLabel,
   NativeSelect,
   Button,
-} from "@mui/material"
-import { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
-import styled from "@emotion/styled"
-import Map from "../Components/kakaomap/Map"
-import { useResultData } from "../context/ResultDataContext"
-import axios from "axios"
+} from "@mui/material";
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import styled from "@emotion/styled";
+import Map from "../Components/kakaomap/Map";
+import { useResultData } from "../context/ResultDataContext";
+import axios from "axios";
 
 export default function HomePage() {
-  const [selectedGu, setSelectedGu] = useState("")
-  const [selectedDong, setSelectedDong] = useState("")
-  const [selectedCategory, setSelectedCategory] = useState("")
-  const [loading, setLoading] = useState(false)
-  const [guList, setGuList] = useState([])
-  const [dongList, setDongList] = useState([])
-  const [categoryList, setCategoryList] = useState([])
+  const [selectedGu, setSelectedGu] = useState("");
+  const [selectedDong, setSelectedDong] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [guList, setGuList] = useState([]);
+  const [dongList, setDongList] = useState([]);
+  const [categoryList, setCategoryList] = useState([]);
 
   const { setSelection, setAiResult, setDbResult, resetResults } =
-    useResultData()
+    useResultData();
 
   useEffect(() => {
     const fetchGu = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/gu`)
-        setGuList(res.data)
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/gu`);
+        setGuList(res.data);
       } catch (err) {
-        console.error(err)
+        console.error(err);
       }
-    }
+    };
 
-    fetchGu()
-  }, [])
+    fetchGu();
+  }, []);
 
   useEffect(() => {
     if (!selectedGu) {
-      setDongList([])
-      setSelectedDong("")
-      return
+      setDongList([]);
+      setSelectedDong("");
+      return;
     }
 
     const fetchDong = async () => {
       try {
         const res = await axios.get(`${import.meta.env.VITE_API_URL}/gu/dong`, {
           params: { gu: selectedGu }, // 쿼리 파라미터로 구 보내기
-        })
-        setDongList(res.data)
+        });
+        setDongList(res.data);
       } catch (err) {
-        console.error(err)
-        setDongList([])
+        console.error(err);
+        setDongList([]);
       }
-    }
+    };
 
-    fetchDong()
-  }, [selectedGu])
+    fetchDong();
+  }, [selectedGu]);
 
   useEffect(() => {
     const fetchCategory = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/category`)
-        setCategoryList(res.data)
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/category`);
+        setCategoryList(res.data);
       } catch (err) {
-        console.error(err)
+        console.error(err);
       }
-    }
+    };
 
-    fetchCategory()
-  }, [])
+    fetchCategory();
+  }, []);
 
   const handleGuChange = (e) => {
-    const value = e.target.value
-    setSelectedGu(value)
-    setSelectedDong("")
-  }
+    const value = e.target.value;
+    setSelectedGu(value);
+    setSelectedDong("");
+  };
   const handleCategoryChange = (e) => {
-    setSelectedCategory(e.target.value)
-  }
+    setSelectedCategory(e.target.value);
+  };
 
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const handleSearchClick = async () => {
     if (!selectedGu || !selectedDong || !selectedCategory) {
-      alert("구, 동, 업종을 모두 선택해주세요.")
-      return
+      alert("구, 동, 업종을 모두 선택해주세요.");
+      return;
     }
 
     const body = {
       gu: selectedGu,
       dong: selectedDong,
       category: selectedCategory,
-    }
+    };
 
     try {
-      setLoading(true)
-      resetResults()
-      setSelection(body)
+      setLoading(true);
+      resetResults();
+      setSelection(body);
 
-      const [aiRes, dbRes] = await Promise.all([
-        axios.get("/ai", { params: body }),
-        axios.get("/result", { params: body }),
-      ])
+      const [dbRes] = await Promise.all([
+        // axios.get("/ai", { params: body }),
+        axios.get(`${import.meta.env.VITE_API_URL}/result`, { params: body }),
+      ]);
 
       // 응답 Provider에 저장
-      setAiResult(aiRes.data)
-      setDbResult(dbRes.data)
+      // setAiResult(aiRes.data)
+      setDbResult(dbRes.data);
+      console.log(dbRes.data);
 
       // 저장 후 ResultPage로 이동
-      navigate("/result")
+      navigate("/result");
     } catch (err) {
-      console.error(err)
-      alert("서버 요청 중 오류가 발생했습니다.")
+      console.error(err);
+      alert("서버 요청 중 오류가 발생했습니다.");
     } finally {
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
   return (
     <Container>
       <SearchWrapper>
@@ -201,7 +202,7 @@ export default function HomePage() {
         </MapWrap>
       </MapWrapper>
     </Container>
-  )
+  );
 }
 
 const Container = styled.div`
@@ -212,31 +213,31 @@ const Container = styled.div`
   @media (max-width: 780px) {
     flex-direction: column;
   }
-`
+`;
 const SearchWrapper = styled.div`
   width: 100%;
-`
+`;
 const ContentWrap = styled.section`
   margin-top: 3em;
   padding: 2em;
-`
+`;
 const FormWrap = styled.div`
   padding: 2em;
-`
+`;
 const SelectForm = styled.div`
   margin-bottom: 2em;
-`
+`;
 const SearchForm = styled.div`
   display: flex;
   justify-content: space-between;
-`
+`;
 const MapWrapper = styled.div`
   width: 100%;
-`
+`;
 const MapWrap = styled.div`
   margin-top: 3em;
   padding: 2em;
-`
+`;
 
 // const guList = [
 //   { value: "0", label: "구를 선택하세요" },
