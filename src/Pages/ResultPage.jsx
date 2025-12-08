@@ -144,7 +144,7 @@ export default function ResultPage() {
         </SecBox>
       </SectionWrap>
       <SectionWrap>
-        <SecTitle>2. 분기별 매출 추세</SecTitle>
+        <SecTitle>2. 분기별 매출 현황</SecTitle>
         <SecChart>
           <SalesBar data={data_qs} />
         </SecChart>
@@ -156,7 +156,11 @@ export default function ResultPage() {
         </SecChart>
       </SectionWrap>
       <SectionWrap>
-        <SecTitle>3. 연령별 유동인구 분포 및 매출 현황</SecTitle>
+        <SecTitle>3. 시간별 매출 현황</SecTitle>
+        <SecChart>{/* <SalePieChart /> */}</SecChart>
+      </SectionWrap>
+      <SectionWrap>
+        <SecTitle>4. 연령별 유동인구 분포 및 매출 현황</SecTitle>
         <SecChart>
           <DivWrap>
             <DivBox>
@@ -169,7 +173,7 @@ export default function ResultPage() {
         </SecChart>
       </SectionWrap>
       <SectionWrap>
-        <SecTitle>4. 또 뭐하지?</SecTitle>
+        <SecTitle>3. 또 뭐하지?</SecTitle>
         <SecChart>{/* <SalePieChart /> */}</SecChart>
       </SectionWrap>
       <CommentWrap>
