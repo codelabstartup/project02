@@ -1,24 +1,82 @@
-import { SalesBar, FpLine, AgeRadar, AgeSaleRadar } from "../Components/Chart"
+import {
+  SalesBar,
+  FpLine,
+  AgeRadar,
+  AgeSaleRadar,
+  TimeSales,
+} from "../Components/Chart"
 import styled from "@emotion/styled"
 import { useResultData } from "../context/ResultDataContext"
-import { Table, TableRow, TableCell } from "@mui/material"
+import { Table, TableRow, TableCell, LinearProgress } from "@mui/material"
+import { useEffect, useRef, useState } from "react"
+import { useNavigate } from "react-router-dom"
 
 export default function ResultPage() {
-  // const data = [
-  //   { name: "Jan", value: 400, pv: 240, uv: 200 },
-  //   { name: "Feb", value: 300, pv: 139, uv: 120 },
-  //   { name: "Mar", value: 500, pv: 380, uv: 260 },
-  //   { name: "Apr", value: 200, pv: 200, uv: 150 },
-  //   { name: "May", value: 350, pv: 180, uv: 160 },
-  //   { name: "Jun", value: 600, pv: 390, uv: 300 },
-  // ]
   const { dbResult, selection } = useResultData()
+  const navigate = useNavigate()
+  const hasRedirected = useRef(false)
+  const [isLoading, setIsLoading] = useState(true)
+
+  // ✅ selection / result 상태 계산
+  const hasSelection =
+    selection && selection.gu && selection.dong && selection.category
+
+  const noSelection = !hasSelection
+
+  const hasResult =
+    Array.isArray(dbResult) &&
+    dbResult.length > 0 &&
+    Array.isArray(dbResult[0]) &&
+    dbResult[0].length > 0
+
+  const noResult = !hasResult
+
+  // 🔹 1. 검색 데이터/결과에 따른 리다이렉트 처리
+  useEffect(() => {
+    if (hasRedirected.current) return
+
+    // 1️⃣ 검색 데이터가 아예 없는 경우 (직접 /result로 들어온 경우)
+    if (noSelection) {
+      hasRedirected.current = true
+      alert("검색 데이터가 누락되었습니다. 다시 검색해주세요.")
+      navigate("/")
+      return
+    }
+
+    // 2️⃣ 검색은 했는데 결과가 없는 경우
+    if (noResult) {
+      hasRedirected.current = true
+      alert("선택하신 지역에는 해당 업종이 없습니다.")
+      navigate("/")
+      return
+    }
+  }, [noSelection, noResult, navigate])
+
+  // 🔹 2. 로딩 오버레이 제어 (페이지 진입 시 잠깐 보여주기)
+  useEffect(() => {
+    // selection과 result가 정상일 때만 로딩 오버레이 동작
+    if (noSelection || noResult) return
+
+    setIsLoading(true)
+    const timer = setTimeout(() => {
+      setIsLoading(false)
+    }, 800) // 로딩을 최소 0.8초는 보여줌 (원하면 조절 가능)
+
+    return () => clearTimeout(timer)
+  }, [noSelection, noResult])
+
+  // 🔹 렌더링 방어 (에러 방지용)
+  if (noSelection || noResult) {
+    return null
+  }
+
   const data_qs = dbResult[0] || []
   const data_ags = dbResult[1] || []
   const data_fp = dbResult[2] || []
   const data_ssi = dbResult[3] || []
   const data_cai = dbResult[4] || []
-  console.log(data_fp)
+  const data_ts = dbResult[5] || []
+  // console.log(data_ts)
 
   const monthAvg = Math.floor(
     data_qs[data_qs.length - 1].qs_sales / 3
@@ -32,6 +90,7 @@ export default function ResultPage() {
   const monthAvgPop = Math.floor(
     data_fp[data_fp.length - 1].fp_total / 3
   ).toLocaleString()
+  const timeSales = data_ts.slice(-4)
   const ssiCnt = data_ssi[data_ssi.length - 1].ssi_cnt
   const ssiSmrCnt = data_ssi[data_ssi.length - 1].ssi_similar_cnt
 
@@ -40,6 +99,14 @@ export default function ResultPage() {
   const category = selection?.category
   return (
     <Container>
+      {isLoading && (
+        <LoadingOverlay>
+          <LoadingBox>
+            <p>AI가 분석 중입니다...</p>
+            <LinearProgress />
+          </LoadingBox>
+        </LoadingOverlay>
+      )}
       <ResultWrapper>
         <ResultWrap>
           <ResultContent>
@@ -150,36 +217,45 @@ export default function ResultPage() {
         </SecChart>
       </SectionWrap>
       <SectionWrap>
-        <SecTitle>2. 유동인구 현황</SecTitle>
+        <SecTitle>3. 유동인구 현황</SecTitle>
         <SecChart>
           <FpLine data={data_fp} />
         </SecChart>
       </SectionWrap>
       <SectionWrap>
-        <SecTitle>3. 시간별 매출 현황</SecTitle>
-        <SecChart>{/* <SalePieChart /> */}</SecChart>
-      </SectionWrap>
-      <SectionWrap>
-        <SecTitle>4. 연령별 유동인구 분포 및 매출 현황</SecTitle>
+        <SecTitle>4. 시간별 매출 현황(2024년 분기별)</SecTitle>
         <SecChart>
-          <DivWrap>
-            <DivBox>
-              <AgeRadar data={data_fp} />
-            </DivBox>
-            <DivBox>
-              <AgeSaleRadar data={data_ags} />
-            </DivBox>
-          </DivWrap>
+          <TimeSales data={timeSales} />
         </SecChart>
       </SectionWrap>
       <SectionWrap>
-        <SecTitle>3. 또 뭐하지?</SecTitle>
-        <SecChart>{/* <SalePieChart /> */}</SecChart>
+        <SecTitle>5. 연령별 유동인구 분포 및 매출 현황</SecTitle>
+        <SecChart>
+          <DivBox>
+            <AgeRadar data={data_fp} />
+          </DivBox>
+          <DivBox>
+            <AgeSaleRadar data={data_ags} />
+          </DivBox>
+        </SecChart>
       </SectionWrap>
       <CommentWrap>
-        <CmtTitle>We believe</CmtTitle>
+        <CmtTitle>
+          <h6>Notice</h6>
+        </CmtTitle>
         <CmtContent>
-          <CmtBox>블라블라</CmtBox>
+          <CmtBox>
+            <p></p>본 웹 사이트를 통해 배포, 전송되거나, 본 웹 사이트에 포함되어
+            있는 서비스로부터 제공되는 상권정보는 참고 사항이며, 사실과 차이가
+            있을 수 있어 정확성이나 신뢰성에 대해 어떠한 보증도 하지 않습니다.
+            <p></p>
+            제공된 정보에 의한 투자결과에 대한 법적인 책임을 지지 않습니다.
+            또한, 서비스 및 정보와 관련하여 직접, 간접, 부수적, 파생적인 손해에
+            대해서 책임을 지지 않습니다.
+            <p></p> 필요한 경우 그 재량에 의해 타인의 권리를 침해하거나 위반하는
+            사용자에 대하여 사전 통지 없이 서비스 이용 제한 조치를 취할 수
+            있습니다.
+          </CmtBox>
         </CmtContent>
       </CommentWrap>
     </Container>
@@ -237,6 +313,7 @@ const SectionWrap = styled.div`
 
   @media (max-width: 780px) {
     flex-direction: column;
+    height: auto; /* 여기서만 자동 높이 */
   }
 `
 const SecTitle = styled.div`
@@ -245,19 +322,16 @@ const SecTitle = styled.div`
 const SecChart = styled.div`
   width: 100%;
   height: 400px;
-`
-const DivWrap = styled.div`
-  width: 100%;
   display: flex;
   justify-content: between-space;
 
   @media (max-width: 780px) {
     flex-direction: column;
+    height: auto; /* 여기서만 자동 높이 */
   }
 `
 const DivBox = styled.div`
   width: 100%;
-  height: 400px;
 `
 const SecBox = styled.div``
 const UBox = styled.div`
@@ -271,11 +345,12 @@ const CommentWrap = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
+  margin-top: 2em;
 `
 const CmtTitle = styled.div`
   font-size: 1.8em;
   margin-top: 1.5em;
-  margin-bottom: 1.5em;
+  margin-bottom: 0.5em;
 `
 const CmtContent = styled.div`
   width: 100%;
@@ -283,9 +358,32 @@ const CmtContent = styled.div`
 const CmtBox = styled.div`
   width: 80%;
   background-color: #d2f8dc;
+  font-size: 0.7em;
+  color: white;
   padding: 1em;
   border-radius: 10px;
   margin: auto;
   margin-bottom: 2em;
   text-align: center;
+`
+const LoadingOverlay = styled.div`
+  position: fixed;
+  inset: 0; /* top:0, right:0, bottom:0, left:0 와 동일 */
+  background: rgba(255, 255, 255, 0.6);
+  backdrop-filter: blur(6px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+`
+
+const LoadingBox = styled.div`
+  width: 60%;
+  max-width: 400px;
+  padding: 1.5em 2em;
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  font-size: 0.9rem;
 `

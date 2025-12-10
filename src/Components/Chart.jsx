@@ -88,61 +88,63 @@ function SalesBar({ data }) {
   }
 
   return (
-    <ResponsiveBar
-      data={chartData}
-      keys={weekdayKeys} // ✅ 요일별 스택 유지
-      indexBy="yqc_code"
-      margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
-      padding={0.3}
-      groupMode="stacked"
-      axisBottom={{
-        legend: "분기",
-        legendOffset: 32,
-        legendPosition: "middle",
-      }}
-      axisLeft={{
-        legend: "매출 (단위: 만원)",
-        legendOffset: -50,
-        legendPosition: "middle",
-      }}
-      // ✅ 각 segment 위의 기본 라벨은 끔 (요일별 숫자는 안 보이게)
-      label={() => null}
-      labelSkipWidth={12}
-      labelSkipHeight={12}
-      // ✅ 툴팁은 요일별 금액 그대로
-      tooltip={({ id, value, color, indexValue }) => (
-        <div
-          style={{
-            padding: "4px 8px",
-            background: "white",
-            border: "1px solid #ccc",
-          }}
-        >
-          <div>
-            <strong>{indexValue}</strong>
+    <div style={{ width: "100%", height: 420 }}>
+      <ResponsiveBar
+        data={chartData}
+        keys={weekdayKeys} // ✅ 요일별 스택 유지
+        indexBy="yqc_code"
+        margin={{ top: 50, right: 130, bottom: 50, left: 60 }}
+        padding={0.3}
+        groupMode="stacked"
+        axisBottom={{
+          legend: "분기",
+          legendOffset: 32,
+          legendPosition: "middle",
+        }}
+        axisLeft={{
+          legend: "매출 (단위: 만원)",
+          legendOffset: -50,
+          legendPosition: "middle",
+        }}
+        // ✅ 각 segment 위의 기본 라벨은 끔 (요일별 숫자는 안 보이게)
+        label={() => null}
+        labelSkipWidth={12}
+        labelSkipHeight={12}
+        // ✅ 툴팁은 요일별 금액 그대로
+        tooltip={({ id, value, color, indexValue }) => (
+          <div
+            style={{
+              padding: "4px 8px",
+              background: "white",
+              border: "1px solid #ccc",
+            }}
+          >
+            <div>
+              <strong>{indexValue}</strong>
+            </div>
+            <div style={{ color }}>
+              {weekdayLabels[id] ?? id}: {value.toLocaleString()} 만원
+            </div>
           </div>
-          <div style={{ color }}>
-            {weekdayLabels[id] ?? id}: {value.toLocaleString()} 만원
-          </div>
-        </div>
-      )}
-      legends={[
-        {
-          dataFrom: "keys",
-          anchor: "bottom-right",
-          direction: "column",
-          translateX: 120,
-          itemsSpacing: 3,
-          itemWidth: 80,
-          itemHeight: 18,
-          itemDirection: "left-to-right",
-          symbolSize: 14,
-          label: (legend) => weekdayLabels[legend.id] ?? legend.id,
-        },
-      ]}
-      // ✅ 커스텀 레이어 추가 (bars 위에 합계)
-      layers={["grid", "axes", "bars", TotalLabelLayer, "markers", "legends"]}
-    />
+        )}
+        legends={[
+          {
+            dataFrom: "keys",
+            anchor: "bottom-right",
+            direction: "column",
+            translateX: 120,
+            itemsSpacing: 3,
+            itemWidth: 80,
+            itemHeight: 18,
+            itemDirection: "left-to-right",
+            symbolSize: 14,
+            label: (legend) => weekdayLabels[legend.id] ?? legend.id,
+          },
+        ]}
+        // ✅ 커스텀 레이어 추가 (bars 위에 합계)
+        layers={["grid", "axes", "bars", TotalLabelLayer, "markers", "legends"]}
+      />
+    </div>
   )
 }
 
@@ -175,45 +177,47 @@ function FpLine({ data }) {
   ]
 
   return (
-    <ResponsiveLine
-      data={lineData}
-      margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
-      xScale={{ type: "point" }}
-      yScale={{
-        type: "linear",
-        min: "auto",
-        max: "auto",
-        stacked: false,
-        reverse: false,
-      }}
-      axisBottom={{
-        legend: "분기",
-        legendOffset: 36,
-        legendPosition: "middle",
-      }}
-      axisLeft={{
-        legend: "유동인구",
-        legendOffset: -55,
-        legendPosition: "middle",
-      }}
-      pointSize={8}
-      pointColor={{ theme: "background" }}
-      pointBorderWidth={2}
-      pointBorderColor={{ from: "serieColor" }}
-      pointLabelYOffset={-12}
-      enableTouchCrosshair={true}
-      useMesh={true}
-      legends={[
-        {
-          anchor: "bottom-right",
-          direction: "column",
-          translateX: 100,
-          itemWidth: 80,
-          itemHeight: 22,
-          symbolShape: "circle",
-        },
-      ]}
-    />
+    <div style={{ width: "100%", height: 420 }}>
+      <ResponsiveLine
+        data={lineData}
+        margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
+        xScale={{ type: "point" }}
+        yScale={{
+          type: "linear",
+          min: "auto",
+          max: "auto",
+          stacked: false,
+          reverse: false,
+        }}
+        axisBottom={{
+          legend: "분기",
+          legendOffset: 36,
+          legendPosition: "middle",
+        }}
+        axisLeft={{
+          legend: "유동인구",
+          legendOffset: -55,
+          legendPosition: "middle",
+        }}
+        pointSize={8}
+        pointColor={{ theme: "background" }}
+        pointBorderWidth={2}
+        pointBorderColor={{ from: "serieColor" }}
+        pointLabelYOffset={-12}
+        enableTouchCrosshair={true}
+        useMesh={true}
+        legends={[
+          {
+            anchor: "bottom-right",
+            direction: "column",
+            translateX: 100,
+            itemWidth: 80,
+            itemHeight: 22,
+            symbolShape: "circle",
+          },
+        ]}
+      />
+    </div>
   )
 }
 
@@ -260,6 +264,60 @@ function AgeRadar({ data }) {
   )
 }
 
+function TimeSales({ data }) {
+  const timeKeys = [
+    "t_00_06",
+    "t_06_11",
+    "t_11_14",
+    "t_14_17",
+    "t_17_21",
+    "t_21_24",
+  ]
+
+  const transformed = data.map((row) => ({
+    id: row.yqc_code, // ← 여기서 id = yqc_code
+    data: timeKeys.map((key) => ({
+      x: key, // x = t_00_06, t_06_11...
+      y: Number(row[key]) / 10000, // y = 해당 값 (숫자로 변환)
+    })),
+  }))
+
+  return (
+    <div style={{ width: "100%", height: 420 }}>
+      <ResponsiveLine
+        data={transformed}
+        margin={{ top: 50, right: 110, bottom: 50, left: 60 }}
+        yScale={{
+          type: "linear",
+          min: "auto",
+          max: "auto",
+          stacked: true,
+          reverse: false,
+        }}
+        axisBottom={{ legend: "시간대별 매출", legendOffset: 36 }}
+        axisLeft={{ legend: "매출(단위: 만원)", legendOffset: -50 }}
+        pointSize={10}
+        pointColor={{ theme: "background" }}
+        pointBorderWidth={2}
+        pointBorderColor={{ from: "seriesColor" }}
+        pointLabelYOffset={-12}
+        enableTouchCrosshair={true}
+        useMesh={true}
+        legends={[
+          {
+            anchor: "bottom-right",
+            direction: "column",
+            translateX: 100,
+            itemWidth: 80,
+            itemHeight: 22,
+            symbolShape: "circle",
+          },
+        ]}
+      />
+    </div>
+  )
+}
+
 function AgeSaleRadar({ data }) {
   const lastItem = data[data.length - 1]
 
@@ -302,4 +360,4 @@ function AgeSaleRadar({ data }) {
   )
 }
 
-export { SalesBar, FpLine, AgeRadar, AgeSaleRadar }
+export { SalesBar, FpLine, AgeRadar, TimeSales, AgeSaleRadar }
