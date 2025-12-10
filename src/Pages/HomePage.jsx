@@ -4,6 +4,7 @@ import {
   InputLabel,
   NativeSelect,
   Button,
+  LinearProgress,
 } from "@mui/material"
 import { useState, useEffect } from "react"
 import { useNavigate } from "react-router-dom"
@@ -114,7 +115,7 @@ export default function HomePage() {
     } catch (err) {
       console.error(err)
       alert("서버 요청 중 오류가 발생했습니다.")
-    } finally {
+      // ❗ 에러가 난 경우에만 HomePage에 남으니까, 이때만 로딩 해제
       setLoading(false)
     }
   }
