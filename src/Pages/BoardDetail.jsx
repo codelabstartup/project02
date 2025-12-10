@@ -14,4 +14,12 @@ function BoardDetail() {
       .then((data) => setPostData(data));
   }, [id]);
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    await fetch(`http://localhost:8000/board/${id}/comments`),{
+      method:"POST",
+      headers: { }
+    }
+  }
+
 }
