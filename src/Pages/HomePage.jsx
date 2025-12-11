@@ -4,139 +4,140 @@ import {
   InputLabel,
   NativeSelect,
   Button,
-} from "@mui/material"
-import { useState, useEffect } from "react"
-import { useNavigate, useLocation } from "react-router-dom"
-import styled from "@emotion/styled"
-import Map from "../Components/kakaomap/Map"
-import { useResultData } from "../context/ResultDataContext"
-import axios from "axios"
+} from "@mui/material";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
+import styled from "@emotion/styled";
+import Map from "../Components/kakaomap/Map";
+import { useResultData } from "../context/ResultDataContext";
+import axios from "axios";
 
 export default function HomePage() {
-  const [selectedGu, setSelectedGu] = useState("")
-  const [selectedDong, setSelectedDong] = useState("")
-  const [selectedCategory, setSelectedCategory] = useState("")
-  const [loading, setLoading] = useState(false)
-  const [guList, setGuList] = useState([])
-  const [dongList, setDongList] = useState([])
-  const [categoryList, setCategoryList] = useState([])
+  const [selectedGu, setSelectedGu] = useState("");
+  const [selectedDong, setSelectedDong] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [guList, setGuList] = useState([]);
+  const [dongList, setDongList] = useState([]);
+  const [categoryList, setCategoryList] = useState([]);
 
-  const location = useLocation()
-  const navigate = useNavigate()
+  const location = useLocation();
+  const navigate = useNavigate();
 
   const { setSelection, setAiResult, setDbResult, resetResults } =
-    useResultData()
+    useResultData();
 
   useEffect(() => {
     const fetchGu = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/gu`)
-        setGuList(res.data)
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/gu`);
+        setGuList(res.data);
       } catch (err) {
-        console.error(err)
+        console.error(err);
       }
-    }
+    };
 
-    fetchGu()
-  }, [])
+    fetchGu();
+  }, []);
 
   useEffect(() => {
     if (!selectedGu) {
-      setDongList([])
-      setSelectedDong("")
-      return
+      setDongList([]);
+      setSelectedDong("");
+      return;
     }
 
     const fetchDong = async () => {
       try {
         const res = await axios.get(`${import.meta.env.VITE_API_URL}/gu/dong`, {
           params: { gu: selectedGu }, // 쿼리 파라미터로 구 보내기
-        })
-        setDongList(res.data)
+        });
+        setDongList(res.data);
       } catch (err) {
-        console.error(err)
-        setDongList([])
+        console.error(err);
+        setDongList([]);
       }
-    }
+    };
 
-    fetchDong()
-  }, [selectedGu])
+    fetchDong();
+  }, [selectedGu]);
 
   useEffect(() => {
     const fetchCategory = async () => {
       try {
-        const res = await axios.get(`${import.meta.env.VITE_API_URL}/category`)
-        setCategoryList(res.data)
+        const res = await axios.get(`${import.meta.env.VITE_API_URL}/category`);
+        setCategoryList(res.data);
       } catch (err) {
-        console.error(err)
+        console.error(err);
       }
-    }
+    };
 
-    fetchCategory()
-  }, [])
+    fetchCategory();
+  }, []);
 
   const handleGuChange = (e) => {
-    const value = e.target.value
-    setSelectedGu(value)
-    setSelectedDong("")
-  }
+    const value = e.target.value;
+    setSelectedGu(value);
+    setSelectedDong("");
+  };
   const handleCategoryChange = (e) => {
-    setSelectedCategory(e.target.value)
-  }
+    setSelectedCategory(e.target.value);
+  };
 
   // const navigate = useNavigate()
 
   const handleSearchClick = async () => {
     if (!selectedGu || !selectedDong || !selectedCategory) {
-      alert("구, 동, 업종을 모두 선택해주세요.")
-      return
+      alert("구, 동, 업종을 모두 선택해주세요.");
+      return;
     }
 
     const body = {
       gu: selectedGu,
       dong: selectedDong,
       category: selectedCategory,
-    }
+    };
 
     try {
-      setLoading(true)
-      resetResults()
-      setSelection(body)
+      setLoading(true);
+      resetResults();
+      setSelection(body);
 
-      const [dbRes] = await Promise.all([
+      const [aiRes, dbRes] = await Promise.all([
         // axios.get("/ai", { params: body }),
+        axios.get(`${import.meta.env.VITE_API_URL}/ai`, { params: body }),
         axios.get(`${import.meta.env.VITE_API_URL}/result`, { params: body }),
-      ])
+      ]);
 
       // 응답 Provider에 저장
-      // setAiResult(aiRes.data)
-      setDbResult(dbRes.data)
+      setAiResult(aiRes.data);
+      setDbResult(dbRes.data);
 
       // 저장 후 ResultPage로 이동
-      navigate("/result")
+      navigate("/result");
     } catch (err) {
-      console.error(err)
-      alert("서버 요청 중 오류가 발생했습니다.")
+      console.error(err);
+      alert("서버 요청 중 오류가 발생했습니다.");
       // ❗ 에러가 난 경우에만 HomePage에 남으니까, 이때만 로딩 해제
-      setLoading(false)
+      setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    const error = location.state?.error
+    const error = location.state?.error;
 
-    if (!error) return
+    if (!error) return;
 
     if (error === "NO_SELECTION") {
-      alert("검색 데이터가 누락되었습니다. 다시 검색해주세요.")
+      alert("검색 데이터가 누락되었습니다. 다시 검색해주세요.");
     } else if (error === "NO_RESULT") {
-      alert("선택하신 지역에는 해당 업종이 없습니다.")
+      alert("선택하신 지역에는 해당 업종이 없습니다.");
     }
 
     // 한 번 alert 띄운 뒤에는 state 제거해서
     // 뒤로가기 할 때 또 alert 안 뜨게
-    navigate("/", { replace: true, state: {} })
-  }, [location.state, navigate])
+    navigate("/", { replace: true, state: {} });
+  }, [location.state, navigate]);
 
   return (
     <Container>
@@ -221,7 +222,7 @@ export default function HomePage() {
         </MapWrap>
       </MapWrapper>
     </Container>
-  )
+  );
 }
 
 const Container = styled.div`
@@ -232,28 +233,28 @@ const Container = styled.div`
   @media (max-width: 780px) {
     flex-direction: column;
   }
-`
+`;
 const SearchWrapper = styled.div`
   width: 100%;
-`
+`;
 const ContentWrap = styled.section`
   margin-top: 3em;
   padding: 2em;
-`
+`;
 const FormWrap = styled.div`
   padding: 2em;
-`
+`;
 const SelectForm = styled.div`
   margin-bottom: 2em;
-`
+`;
 const SearchForm = styled.div`
   display: flex;
   justify-content: space-between;
-`
+`;
 const MapWrapper = styled.div`
   width: 100%;
-`
+`;
 const MapWrap = styled.div`
   margin-top: 3em;
   padding: 2em;
-`
+`;

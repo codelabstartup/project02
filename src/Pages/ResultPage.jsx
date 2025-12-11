@@ -4,111 +4,111 @@ import {
   AgeRadar,
   AgeSaleRadar,
   TimeSales,
-} from "../Components/Chart"
-import styled from "@emotion/styled"
-import { useResultData } from "../context/ResultDataContext"
-import { Table, TableRow, TableCell, LinearProgress } from "@mui/material"
-import { useEffect, useRef, useState } from "react"
-import { useNavigate } from "react-router-dom"
+} from "../Components/Chart";
+import styled from "@emotion/styled";
+import { useResultData } from "../context/ResultDataContext";
+import { Table, TableRow, TableCell, LinearProgress } from "@mui/material";
+import { useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function ResultPage() {
-  const { dbResult, selection } = useResultData()
-  const navigate = useNavigate()
-  const hasRedirected = useRef(false)
-  const [showCharts, setShowCharts] = useState(false)
+  const { aiResult, dbResult, selection } = useResultData();
+  const navigate = useNavigate();
+  const hasRedirected = useRef(false);
+  const [showCharts, setShowCharts] = useState(false);
 
   // selection / result 상태 계산
   const hasSelection =
-    selection && selection.gu && selection.dong && selection.category
+    selection && selection.gu && selection.dong && selection.category;
 
-  const noSelection = !hasSelection
+  const noSelection = !hasSelection;
 
   const hasResult =
     Array.isArray(dbResult) &&
     dbResult.length > 0 &&
     Array.isArray(dbResult[0]) &&
-    dbResult[0].length > 0
+    dbResult[0].length > 0;
 
-  const noResult = !hasResult
+  const noResult = !hasResult;
 
   // 검색 결과에 따른 리다이렉트 처리
   useEffect(() => {
-    if (hasRedirected.current) return
+    if (hasRedirected.current) return;
 
     // 검색 데이터 없는 경우 (직접 /result로 들어온 경우)
     if (noSelection) {
-      hasRedirected.current = true
+      hasRedirected.current = true;
 
       requestAnimationFrame(() => {
         setTimeout(() => {
           navigate("/", {
             replace: true,
             state: { error: "NO_SELECTION" },
-          })
-        }, 0)
-      })
-      return
+          });
+        }, 0);
+      });
+      return;
     }
 
     // 검색 결과 없는 경우
     if (noResult) {
-      hasRedirected.current = true
+      hasRedirected.current = true;
 
       requestAnimationFrame(() => {
         setTimeout(() => {
           navigate("/", {
             replace: true,
             state: { error: "NO_RESULT" },
-          })
-        }, 0)
-      })
-      return
+          });
+        }, 0);
+      });
+      return;
     }
-  }, [noSelection, noResult, navigate])
+  }, [noSelection, noResult, navigate]);
 
   // 로딩 오버레이
   useEffect(() => {
-    if (noSelection || noResult) return
+    if (noSelection || noResult) return;
 
     const timer = setTimeout(() => {
-      setShowCharts(true)
-    }, 4000) //
+      setShowCharts(true);
+    }, 4000); //
 
-    return () => clearTimeout(timer)
-  }, [noSelection, noResult])
+    return () => clearTimeout(timer);
+  }, [noSelection, noResult]);
 
   // 렌더링 방어
   if (noSelection || noResult) {
-    return null
+    return null;
   }
 
-  const data_qs = dbResult[0] || []
-  const data_ags = dbResult[1] || []
-  const data_fp = dbResult[2] || []
-  const data_ssi = dbResult[3] || []
-  const data_cai = dbResult[4] || []
-  const data_ts = dbResult[5] || []
-  // console.log(data_ts)
+  const data_qs = dbResult[0] || [];
+  const data_ags = dbResult[1] || [];
+  const data_fp = dbResult[2] || [];
+  const data_ssi = dbResult[3] || [];
+  const data_cai = dbResult[4] || [];
+  const data_ts = dbResult[5] || [];
+  console.log(aiResult);
 
   const monthAvg = Math.floor(
     data_qs[data_qs.length - 1].qs_sales / 3
-  ).toLocaleString()
+  ).toLocaleString();
   const monthAvgMen = Math.floor(
     data_ags[data_ags.length - 1].ags_male / 3
-  ).toLocaleString()
+  ).toLocaleString();
   const monthAvgWomen = Math.floor(
     data_ags[data_ags.length - 1].ags_female / 3
-  ).toLocaleString()
+  ).toLocaleString();
   const monthAvgPop = Math.floor(
     data_fp[data_fp.length - 1].fp_total / 3
-  ).toLocaleString()
-  const timeSales = data_ts.slice(-4)
-  const ssiCnt = data_ssi[data_ssi.length - 1].ssi_cnt
-  const ssiSmrCnt = data_ssi[data_ssi.length - 1].ssi_similar_cnt
+  ).toLocaleString();
+  const timeSales = data_ts.slice(-4);
+  const ssiCnt = data_ssi[data_ssi.length - 1].ssi_cnt;
+  const ssiSmrCnt = data_ssi[data_ssi.length - 1].ssi_similar_cnt;
 
-  const gu = selection?.gu
-  const dong = selection?.dong
-  const category = selection?.category
+  const gu = selection?.gu;
+  const dong = selection?.dong;
+  const category = selection?.category;
   return (
     <Container>
       {!showCharts && !noSelection && !noResult && (
@@ -283,13 +283,13 @@ export default function ResultPage() {
         </>
       )}
     </Container>
-  )
+  );
 }
 
 const Container = styled.div`
   width: 100%;
   background-color: #f9f9f9;
-`
+`;
 const ResultWrapper = styled.div`
   display: flex;
   justify-content: space-between;
@@ -298,7 +298,7 @@ const ResultWrapper = styled.div`
   @media (max-width: 780px) {
     flex-direction: column;
   }
-`
+`;
 const ResultWrap = styled.div`
   width: 100%;
   display: flex;
@@ -306,32 +306,32 @@ const ResultWrap = styled.div`
   justify-content: center;
   padding-top: 2em;
   padding-bottom: 2em;
-`
+`;
 const ResultContent = styled.div`
   width: 100%;
-`
+`;
 const H2 = styled.h2`
   text-align: center;
   font-size: 2em;
-`
+`;
 const ResultTitle = styled.div`
   width: 100%;
-`
+`;
 const H1 = styled.h1`
   text-align: center;
   font-size: 3em;
-`
+`;
 const ResultImg = styled.div`
   width: 100%;
-`
+`;
 const ImgBox = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-`
+`;
 const SectionTitle = styled.div`
   padding: 2em 2em 2em 2em;
-`
+`;
 const SectionWrap = styled.div`
   padding: 3em 3em;
 
@@ -339,10 +339,10 @@ const SectionWrap = styled.div`
     flex-direction: column;
     height: auto; /* 여기서만 자동 높이 */
   }
-`
+`;
 const SecTitle = styled.div`
   font-size: 1.5em;
-`
+`;
 const SecChart = styled.div`
   width: 100%;
   height: 400px;
@@ -353,32 +353,32 @@ const SecChart = styled.div`
     flex-direction: column;
     height: auto; /* 여기서만 자동 높이 */
   }
-`
+`;
 const DivBox = styled.div`
   width: 100%;
-`
-const SecBox = styled.div``
+`;
+const SecBox = styled.div``;
 const UBox = styled.div`
   width: 100%;
   padding: 1em 1em;
-`
+`;
 const DBox = styled.div`
   width: 100%;
-`
+`;
 const CommentWrap = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-top: 2em;
-`
+`;
 const CmtTitle = styled.div`
   font-size: 1.8em;
   margin-top: 1.5em;
   margin-bottom: 0.5em;
-`
+`;
 const CmtContent = styled.div`
   width: 100%;
-`
+`;
 const CmtBox = styled.div`
   width: 80%;
   background-color: #d2f8dc;
@@ -389,7 +389,7 @@ const CmtBox = styled.div`
   margin: auto;
   margin-bottom: 2em;
   text-align: center;
-`
+`;
 const LoadingOverlay = styled.div`
   position: fixed;
   inset: 0; /* top:0, right:0, bottom:0, left:0 와 동일 */
@@ -399,7 +399,7 @@ const LoadingOverlay = styled.div`
   justify-content: center;
   align-items: center;
   z-index: 9999;
-`
+`;
 
 const LoadingBox = styled.div`
   width: 60%;
@@ -410,4 +410,4 @@ const LoadingBox = styled.div`
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
   text-align: center;
   font-size: 0.9rem;
-`
+`;
