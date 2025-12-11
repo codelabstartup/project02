@@ -1,7 +1,7 @@
 import styled from "@emotion/styled"
 
 export default function StatusPage() {
-  return <Container>"마켓현황"</Container>
+  return <Container>"상권현황"</Container>
 }
 
 const Container = styled.div`

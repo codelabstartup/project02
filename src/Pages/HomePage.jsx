@@ -100,13 +100,13 @@ export default function HomePage() {
       resetResults()
       setSelection(body)
 
-      const [dbRes] = await Promise.all([
-        // axios.get("/ai", { params: body }),
+      const [aiRes, dbRes] = await Promise.all([
+        axios.get(`${import.meta.env.VITE_API_URL}/ai`, { params: body }),
         axios.get(`${import.meta.env.VITE_API_URL}/result`, { params: body }),
       ])
 
       // 응답 Provider에 저장
-      // setAiResult(aiRes.data)
+      setAiResult(aiRes.data)
       setDbResult(dbRes.data)
 
       // 저장 후 ResultPage로 이동

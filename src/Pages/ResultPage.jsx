@@ -12,7 +12,7 @@ import { useEffect, useRef, useState } from "react"
 import { useNavigate } from "react-router-dom"
 
 export default function ResultPage() {
-  const { dbResult, selection } = useResultData()
+  const { dbResult, selection, aiResult } = useResultData()
   const navigate = useNavigate()
   const hasRedirected = useRef(false)
   const [isLoading, setIsLoading] = useState(true)
@@ -76,7 +76,7 @@ export default function ResultPage() {
   const data_ssi = dbResult[3] || []
   const data_cai = dbResult[4] || []
   const data_ts = dbResult[5] || []
-  // console.log(data_ts)
+  console.log(aiResult)
 
   const monthAvg = Math.floor(
     data_qs[data_qs.length - 1].qs_sales / 3
@@ -118,7 +118,10 @@ export default function ResultPage() {
             </H2>
           </ResultContent>
           <ResultTitle>
-            <H1>추천 or 비추천</H1>
+            <H1>
+              {aiResult?.prediction?.label}
+              <small> 입니다.</small>
+            </H1>
           </ResultTitle>
         </ResultWrap>
         <ResultImg>
@@ -137,6 +140,12 @@ export default function ResultPage() {
       <SectionTitle>
         How it works<p></p>
         <h2>상세 분석 내용</h2>
+        <br />
+        <p
+          dangerouslySetInnerHTML={{
+            __html: aiResult?.prediction?.report ?? "",
+          }}
+        />
       </SectionTitle>
       <SectionWrap>
         <SecTitle>1. 최근 분기 간단 요약</SecTitle>
