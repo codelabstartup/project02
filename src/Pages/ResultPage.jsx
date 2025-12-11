@@ -15,10 +15,9 @@ export default function ResultPage() {
   const { dbResult, selection } = useResultData()
   const navigate = useNavigate()
   const hasRedirected = useRef(false)
-  // const [isLoading, setIsLoading] = useState(true)
   const [showCharts, setShowCharts] = useState(false)
 
-  // ✅ selection / result 상태 계산
+  // selection / result 상태 계산
   const hasSelection =
     selection && selection.gu && selection.dong && selection.category
 
@@ -32,39 +31,53 @@ export default function ResultPage() {
 
   const noResult = !hasResult
 
-  // 🔹 1. 검색 데이터/결과에 따른 리다이렉트 처리
+  // 검색 결과에 따른 리다이렉트 처리
   useEffect(() => {
     if (hasRedirected.current) return
 
-    // 1️⃣ 검색 데이터가 아예 없는 경우 (직접 /result로 들어온 경우)
+    // 검색 데이터 없는 경우 (직접 /result로 들어온 경우)
     if (noSelection) {
       hasRedirected.current = true
-      alert("검색 데이터가 누락되었습니다. 다시 검색해주세요.")
-      navigate("/")
+
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          navigate("/", {
+            replace: true,
+            state: { error: "NO_SELECTION" },
+          })
+        }, 0)
+      })
       return
     }
 
-    // 2️⃣ 검색은 했는데 결과가 없는 경우
+    // 검색 결과 없는 경우
     if (noResult) {
       hasRedirected.current = true
-      alert("선택하신 지역에는 해당 업종이 없습니다.")
-      navigate("/")
+
+      requestAnimationFrame(() => {
+        setTimeout(() => {
+          navigate("/", {
+            replace: true,
+            state: { error: "NO_RESULT" },
+          })
+        }, 0)
+      })
       return
     }
   }, [noSelection, noResult, navigate])
 
-  // 🔹 2. 로딩 오버레이 & 차트 표시 타이밍 제어
+  // 로딩 오버레이
   useEffect(() => {
     if (noSelection || noResult) return
 
     const timer = setTimeout(() => {
       setShowCharts(true)
-    }, 800) // 최소 0.8초 로딩
+    }, 4000) //
 
     return () => clearTimeout(timer)
   }, [noSelection, noResult])
 
-  // 🔹 렌더링 방어 (에러 방지용)
+  // 렌더링 방어
   if (noSelection || noResult) {
     return null
   }
@@ -98,8 +111,7 @@ export default function ResultPage() {
   const category = selection?.category
   return (
     <Container>
-      {/* showCharts가 false일 때는 오버레이 표시 */}
-      {!showCharts && (
+      {!showCharts && !noSelection && !noResult && (
         <LoadingOverlay>
           <LoadingBox>
             <p>AI가 분석 중입니다...</p>

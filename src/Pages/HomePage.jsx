@@ -4,10 +4,9 @@ import {
   InputLabel,
   NativeSelect,
   Button,
-  LinearProgress,
 } from "@mui/material"
 import { useState, useEffect } from "react"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, useLocation } from "react-router-dom"
 import styled from "@emotion/styled"
 import Map from "../Components/kakaomap/Map"
 import { useResultData } from "../context/ResultDataContext"
@@ -21,6 +20,9 @@ export default function HomePage() {
   const [guList, setGuList] = useState([])
   const [dongList, setDongList] = useState([])
   const [categoryList, setCategoryList] = useState([])
+
+  const location = useLocation()
+  const navigate = useNavigate()
 
   const { setSelection, setAiResult, setDbResult, resetResults } =
     useResultData()
@@ -82,7 +84,7 @@ export default function HomePage() {
     setSelectedCategory(e.target.value)
   }
 
-  const navigate = useNavigate()
+  // const navigate = useNavigate()
 
   const handleSearchClick = async () => {
     if (!selectedGu || !selectedDong || !selectedCategory) {
@@ -119,6 +121,23 @@ export default function HomePage() {
       setLoading(false)
     }
   }
+
+  useEffect(() => {
+    const error = location.state?.error
+
+    if (!error) return
+
+    if (error === "NO_SELECTION") {
+      alert("검색 데이터가 누락되었습니다. 다시 검색해주세요.")
+    } else if (error === "NO_RESULT") {
+      alert("선택하신 지역에는 해당 업종이 없습니다.")
+    }
+
+    // 한 번 alert 띄운 뒤에는 state 제거해서
+    // 뒤로가기 할 때 또 alert 안 뜨게
+    navigate("/", { replace: true, state: {} })
+  }, [location.state, navigate])
+
   return (
     <Container>
       <SearchWrapper>
