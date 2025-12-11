@@ -1,17 +1,20 @@
-import React, { useEffect, useState } from "react"
-import { Box, Typography } from "@mui/material"
+import { useEffect, useState } from "react"
 import styled from "@emotion/styled"
 import axios from "axios"
-import { useParams, useNavigate } from "react-router-dom"
-
-const API_BASE_URL = "http://localhost:8000" // ⚠️ 백엔드 주소에 맞게 수정
+import { useNavigate, useParams } from "react-router-dom"
 
 export default function BoardDetail() {
-  const [post, setPost] = useState(null)
+  const [form, setForm] = useState({
+    title: "",
+    writer: "",
+    content: "",
+    password: "", // 보통은 안 보여주지만 형식 맞추려고 남겨둠
+  })
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
 
-  const { id } = useParams() // ✅ /board/:id 에서 id 꺼내기
+  const navigate = useNavigate()
+  const { id } = useParams() // /board/:id
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -19,18 +22,21 @@ export default function BoardDetail() {
         setLoading(true)
         setError(null)
 
-        // 📌 서버 라우터:
-        // @router.get("/") 이고, main.py 에서
-        // app.include_router(board_router, prefix="/board") 라면:
-        //   -> `${API_BASE_URL}/board`
-        // prefix 없이 include 했다면:
-        //   -> `${API_BASE_URL}/`
-        const res = await axios.get(`${API_BASE_URL}/board/${id}`) // 필요하면 / 로 수정
+        const res = await axios.get(
+          `${import.meta.env.VITE_API_URL}/board/${id}`
+        )
 
-        setPost(res.data)
+        const data = res.data
+        // ✅ 백엔드에서 반환하는 키 이름에 맞게 매핑
+        setForm({
+          title: data.ip_title ?? "",
+          writer: data.ip_writer ?? "",
+          content: data.ip_content ?? "",
+          password: "", // 비밀번호는 보통 안 내려줌
+        })
       } catch (err) {
-        console.error("게시판 상세페이지 조회 오류:", err)
-        setError("게시판 상세페이지를 불러오는 중 오류가 발생했습니다.")
+        console.error("게시판 상세 조회 오류:", err)
+        setError("게시글을 불러오는 중 오류가 발생했습니다.")
       } finally {
         setLoading(false)
       }
@@ -42,123 +48,115 @@ export default function BoardDetail() {
   }, [id])
 
   if (loading) {
-    return <Container>게시글을 불러오는 중입니다...</Container>
+    return <Wrapper>게시글을 불러오는 중입니다...</Wrapper>
   }
 
   if (error) {
-    return <Container>{error}</Container>
-  }
-
-  if (!post) {
-    return <Container>게시글을 찾을 수 없습니다.</Container>
+    return <Wrapper>{error}</Wrapper>
   }
 
   return (
-    <Container>
-      {/* 제목 + 메타 정보 영역 */}
-      <TitleWrapper>
-        <TitleBox>{post.ip_title}</TitleBox>
+    <Wrapper>
+      <Title>게시글</Title>
+      {/* ✅ onSubmit 없음 → 글 작성/수정 불가 */}
+      <Form>
+        <Label>제목</Label>
+        <Input name="title" value={form.title} readOnly />
 
-        <MetaRow>
-          <InfoBox>{post.ip_writer}</InfoBox>
-          <InfoBox>{post.ip_created_at}</InfoBox>
-          <InfoBox>{post.ip_view_count}</InfoBox>
-        </MetaRow>
-      </TitleWrapper>
+        <Label>작성자</Label>
+        <Input name="writer" value={form.writer} readOnly />
 
-      {/* 본문 영역 */}
-      <ContentWrapper>
-        <ContentBox>{post.ip_content}</ContentBox>
-      </ContentWrapper>
+        <Label>내용</Label>
+        <Textarea name="content" value={form.content} readOnly />
 
-      {/* 하단 수정/삭제 버튼 */}
-      <FootWrapper>
-        <ReviseBox>수정</ReviseBox>
-        <DeleteBox>삭제</DeleteBox>
-      </FootWrapper>
-    </Container>
+        {/* 비밀번호는 상세 페이지에서 보통 안 보여주니까 주석 처리하거나 제거해도 됨 */}
+        {/* 
+        <Label>비밀번호</Label>
+        <Input
+          type="password"
+          name="password"
+          value={form.password}
+          readOnly
+        />
+        */}
+
+        <ButtonRow>
+          <Button type="button" onClick={() => navigate("/board")}>
+            목록으로
+          </Button>
+        </ButtonRow>
+      </Form>
+    </Wrapper>
   )
 }
 
-const Container = styled.div`
-  width: 100%;
-  min-height: 80vh;
-  border: 4px solid #000;
-  padding: 2.5em 3em;
-  box-sizing: border-box;
-  background-color: #fff;
+/* -------------------------------
+   styled-components 정의 (그대로 사용)
+-------------------------------- */
+
+const Wrapper = styled.div`
+  max-width: 500px;
+  margin: 40px auto;
 `
 
-const TitleWrapper = styled.div`
+const Title = styled.h2`
+  text-align: center;
+  margin-bottom: 24px;
+`
+
+const Form = styled.form`
   display: flex;
   flex-direction: column;
-  align-items: center;
-  margin-bottom: 2em;
+  gap: 12px;
 `
 
-// 가운데 긴 제목 박스
-const TitleBox = styled.div`
-  width: 60%;
-  height: 50px;
-  border: 3px solid #000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 1.4rem;
-  margin-bottom: 1.5em;
+const Label = styled.label`
+  font-weight: 600;
+  margin-bottom: 4px;
 `
 
-// 작성자 / 작성일 / 조회수 가로 줄
-const MetaRow = styled.div`
-  width: 80%;
-  display: flex;
-  justify-content: space-between;
-  gap: 1.5em;
+const Input = styled.input`
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+  background-color: #f5f5f5; /* 읽기 전용 느낌 살짝 */
+  &:focus {
+    border-color: #0077ff;
+    outline: none;
+  }
 `
 
-const InfoBox = styled.div`
-  flex: 1;
-  height: 45px;
-  border: 3px solid #000;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 0.95rem;
+const Textarea = styled.textarea`
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 15px;
+  height: 120px;
+  resize: vertical;
+  background-color: #f5f5f5;
+  &:focus {
+    border-color: #0077ff;
+    outline: none;
+  }
 `
 
-// 본문 전체 영역
-const ContentWrapper = styled.div`
-  margin-top: 2em;
-  display: flex;
-  justify-content: center;
-`
-
-// 가운데 큰 본문 박스
-const ContentBox = styled.div`
-  width: 85%;
-  min-height: 300px;
-  border: 3px solid #000;
-  padding: 1.5em;
-  box-sizing: border-box;
-  font-size: 1rem;
-  line-height: 1.6;
-`
-
-// 하단 버튼 영역
-const FootWrapper = styled.div`
-  margin-top: 2.5em;
+const ButtonRow = styled.div`
+  margin-top: 16px;
   display: flex;
   justify-content: flex-end;
-  gap: 1em;
 `
 
-const ReviseBox = styled.button`
-  width: 80px;
-  height: 45px;
-  border: 3px solid #000;
-  background-color: #fff;
+const Button = styled.button`
+  padding: 12px;
+  background-color: #0077ff;
+  color: white;
+  font-size: 16px;
+  border-radius: 6px;
+  border: none;
   cursor: pointer;
-  font-size: 0.95rem;
-`
 
-const DeleteBox = styled(ReviseBox)``
+  &:hover {
+    background-color: #005fcc;
+  }
+`

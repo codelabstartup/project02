@@ -41,9 +41,11 @@ export default function BoardPage() {
   return (
     <Container>
       <Title>
-        <H5>Services</H5>
+        <H5>차자조 AI의 서울시 상권 추천 서비스</H5>
         <H1> 정보 공유 게시판</H1>
-        <H6>“We want to support businesses that are just getting started.”</H6>
+        <H6>
+          “서울에서 창업을 희망하는 사람들이 소통할 수 있는 공간을 제공합니다.”
+        </H6>
       </Title>
 
       <BoxWrap>
