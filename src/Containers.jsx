@@ -27,7 +27,7 @@ export default function Containers() {
         <Routes>
           <Route path="/" element={<HomePage />} />
           <Route path="/board" element={<BoardPage />} />
-          <Route path="/board/write" element={<BoardWrite />} />
+          <Route path="/boardwriter" element={<BoardWrite />} />
           <Route path="/board/:id" element={<BoardDetail />} />
           <Route path="/result" element={<ResultPage />} />
           <Route path="/status" element={<StatusPage />} />

@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from "react"
-import { Box, Typography } from "@mui/material"
+import { useEffect, useState } from "react"
+import { Typography, Button } from "@mui/material"
 import styled from "@emotion/styled"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
@@ -76,6 +76,14 @@ export default function BoardPage() {
               </PostRow>
             ))}
         </BoardListWrapper>
+        {/* ✅ 글쓰기 버튼에 onClick 추가 */}
+        <Button
+          variant="contained"
+          onClick={() => navigate("/boardwriter")}
+          sx={{ marginLeft: "1rem", height: "40px" }}
+        >
+          글쓰기
+        </Button>
       </BoxWrap>
     </Container>
   )
@@ -108,7 +116,6 @@ const H6 = styled.h6`
 `
 
 const BoxWrap = styled.div`
-  display: flex;
   padding: 2em 2em;
 `
 
