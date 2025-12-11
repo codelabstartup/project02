@@ -10,20 +10,20 @@ export function ResultDataProvider({ children }) {
     category: "",
   });
 
-  // const [aiResult, setAiResult] = useState(null) // AI 분석 결과
+  const [aiResult, setAiResult] = useState(null); // AI 분석 결과
   const [dbResult, setDbResult] = useState(null); // DB 조회 결과
 
   const resetResults = () => {
     setSelection({ gu: "", dong: "", category: "" });
-    // setAiResult(null)
+    setAiResult(null);
     setDbResult(null);
   };
 
   const value = {
     selection,
     setSelection,
-    // aiResult,
-    // setAiResult,
+    aiResult,
+    setAiResult,
     dbResult,
     setDbResult,
     resetResults,

@@ -1,7 +1,7 @@
-import { SalesBar, FpLine, AgeRadar, AgeSaleRadar } from "../Components/Chart"
-import styled from "@emotion/styled"
-import { useResultData } from "../context/ResultDataContext"
-import { Table, TableRow, TableCell } from "@mui/material"
+import { SalesBar, FpLine, AgeRadar, AgeSaleRadar } from "../Components/Chart";
+import styled from "@emotion/styled";
+import { useResultData } from "../context/ResultDataContext";
+import { Table, TableRow, TableCell } from "@mui/material";
 
 export default function ResultPage() {
   // const data = [
@@ -12,32 +12,32 @@ export default function ResultPage() {
   //   { name: "May", value: 350, pv: 180, uv: 160 },
   //   { name: "Jun", value: 600, pv: 390, uv: 300 },
   // ]
-  const { dbResult, selection } = useResultData()
-  const data_qs = dbResult[0] || []
-  const data_ags = dbResult[1] || []
-  const data_fp = dbResult[2] || []
-  const data_ssi = dbResult[3] || []
-  const data_cai = dbResult[4] || []
-  console.log(data_fp)
+  const { aiResult, dbResult, selection } = useResultData();
+  const data_qs = dbResult[0] || [];
+  const data_ags = dbResult[1] || [];
+  const data_fp = dbResult[2] || [];
+  const data_ssi = dbResult[3] || [];
+  const data_cai = dbResult[4] || [];
+  console.log("ai결과", aiResult);
 
   const monthAvg = Math.floor(
     data_qs[data_qs.length - 1].qs_sales / 3
-  ).toLocaleString()
+  ).toLocaleString();
   const monthAvgMen = Math.floor(
     data_ags[data_ags.length - 1].ags_male / 3
-  ).toLocaleString()
+  ).toLocaleString();
   const monthAvgWomen = Math.floor(
     data_ags[data_ags.length - 1].ags_female / 3
-  ).toLocaleString()
+  ).toLocaleString();
   const monthAvgPop = Math.floor(
     data_fp[data_fp.length - 1].fp_total / 3
-  ).toLocaleString()
-  const ssiCnt = data_ssi[data_ssi.length - 1].ssi_cnt
-  const ssiSmrCnt = data_ssi[data_ssi.length - 1].ssi_similar_cnt
+  ).toLocaleString();
+  const ssiCnt = data_ssi[data_ssi.length - 1].ssi_cnt;
+  const ssiSmrCnt = data_ssi[data_ssi.length - 1].ssi_similar_cnt;
 
-  const gu = selection?.gu
-  const dong = selection?.dong
-  const category = selection?.category
+  const gu = selection?.gu;
+  const dong = selection?.dong;
+  const category = selection?.category;
   return (
     <Container>
       <ResultWrapper>
@@ -183,13 +183,13 @@ export default function ResultPage() {
         </CmtContent>
       </CommentWrap>
     </Container>
-  )
+  );
 }
 
 const Container = styled.div`
   width: 100%;
   background-color: #f9f9f9;
-`
+`;
 const ResultWrapper = styled.div`
   display: flex;
   justify-content: space-between;
@@ -198,7 +198,7 @@ const ResultWrapper = styled.div`
   @media (max-width: 780px) {
     flex-direction: column;
   }
-`
+`;
 const ResultWrap = styled.div`
   width: 100%;
   display: flex;
@@ -206,46 +206,46 @@ const ResultWrap = styled.div`
   justify-content: center;
   padding-top: 2em;
   padding-bottom: 2em;
-`
+`;
 const ResultContent = styled.div`
   width: 100%;
-`
+`;
 const H2 = styled.h2`
   text-align: center;
   font-size: 2em;
-`
+`;
 const ResultTitle = styled.div`
   width: 100%;
-`
+`;
 const H1 = styled.h1`
   text-align: center;
   font-size: 3em;
-`
+`;
 const ResultImg = styled.div`
   width: 100%;
-`
+`;
 const ImgBox = styled.div`
   display: flex;
   justify-content: center;
   align-items: center;
-`
+`;
 const SectionTitle = styled.div`
   padding: 2em 2em 2em 2em;
-`
+`;
 const SectionWrap = styled.div`
   padding: 3em 3em;
 
   @media (max-width: 780px) {
     flex-direction: column;
   }
-`
+`;
 const SecTitle = styled.div`
   font-size: 1.5em;
-`
+`;
 const SecChart = styled.div`
   width: 100%;
   height: 400px;
-`
+`;
 const DivWrap = styled.div`
   width: 100%;
   display: flex;
@@ -254,32 +254,32 @@ const DivWrap = styled.div`
   @media (max-width: 780px) {
     flex-direction: column;
   }
-`
+`;
 const DivBox = styled.div`
   width: 100%;
   height: 400px;
-`
-const SecBox = styled.div``
+`;
+const SecBox = styled.div``;
 const UBox = styled.div`
   width: 100%;
   padding: 1em 1em;
-`
+`;
 const DBox = styled.div`
   width: 100%;
-`
+`;
 const CommentWrap = styled.div`
   display: flex;
   flex-direction: column;
   align-items: center;
-`
+`;
 const CmtTitle = styled.div`
   font-size: 1.8em;
   margin-top: 1.5em;
   margin-bottom: 1.5em;
-`
+`;
 const CmtContent = styled.div`
   width: 100%;
-`
+`;
 const CmtBox = styled.div`
   width: 80%;
   background-color: #d2f8dc;
@@ -288,4 +288,4 @@ const CmtBox = styled.div`
   margin: auto;
   margin-bottom: 2em;
   text-align: center;
-`
+`;
