@@ -14,6 +14,15 @@ export default function BoardDetail() {
   const [error, setError] = useState(null)
   // 삭제용 비밀번호
   const [deletePassword, setDeletePassword] = useState("")
+  const [isEditing, setIsEditing] = useState(false)
+
+  const [editForm, setEditForm] = useState({
+    title: "",
+    writer: "",
+    content: "",
+  })
+
+  const [editPassword, setEditPassword] = useState("")
 
   const navigate = useNavigate()
   const { id } = useParams() // /board/:id
@@ -63,6 +72,64 @@ export default function BoardDetail() {
     return <Wrapper>{error}</Wrapper>
   }
 
+  const handleEditStart = () => {
+    // 현재 글 내용을 편집용 상태에 복사
+    setEditForm({
+      title: form.title,
+      writer: form.writer,
+      content: form.content,
+    })
+    setEditPassword("")
+    setIsEditing(true)
+  }
+
+  const handleEditCancel = () => {
+    setIsEditing(false)
+  }
+
+  const handleEditSave = async () => {
+    if (!window.confirm("수정 내용을 저장하시겠습니까?")) return
+
+    if (!editForm.title || !editForm.content) {
+      alert("제목과 내용을 입력해주세요.")
+      return
+    }
+    if (!editPassword) {
+      alert("비밀번호를 입력해주세요.")
+      return
+    }
+
+    try {
+      await axios.put(`${import.meta.env.VITE_API_URL}/board/${id}`, {
+        title: editForm.title,
+        content: editForm.content,
+        password: editPassword,
+      })
+
+      alert("수정되었습니다.")
+
+      // 상세 화면(state)도 수정된 내용으로 갱신
+      setForm((prev) => ({
+        ...prev,
+        title: editForm.title,
+        content: editForm.content,
+      }))
+
+      setIsEditing(false)
+      setEditPassword("")
+    } catch (err) {
+      console.error("수정 오류", err)
+
+      if (err.response && err.response.status === 403) {
+        alert("비밀번호가 일치하지 않습니다.")
+      } else if (err.response && err.response.status === 404) {
+        alert("존재하지 않는 글입니다.")
+      } else {
+        alert("수정 중 오류가 발생했습니다.")
+      }
+    }
+  }
+
   const handleDelete = async () => {
     if (!window.confirm("정말 이 글을 삭제하시겠습니까?")) return
 
@@ -97,41 +164,93 @@ export default function BoardDetail() {
       {/* ✅ onSubmit 없음 → 글 작성/수정 불가 */}
       <Form>
         <Label>제목</Label>
-        <Input name="title" value={form.title} readOnly />
+        <Input
+          name="title"
+          value={isEditing ? editForm.title : form.title}
+          readOnly={!isEditing}
+          onChange={
+            isEditing
+              ? (e) =>
+                  setEditForm((prev) => ({ ...prev, title: e.target.value }))
+              : undefined
+          }
+        />
 
         <Label>작성자</Label>
-        <Input name="writer" value={form.writer} readOnly />
+        <Input
+          name="writer"
+          value={isEditing ? editForm.writer : form.writer}
+          readOnly={!isEditing}
+          onChange={
+            isEditing
+              ? (e) =>
+                  setEditForm((prev) => ({ ...prev, writer: e.target.value }))
+              : undefined
+          }
+        />
 
         <Label>내용</Label>
-        <Textarea name="content" value={form.content} readOnly />
+        <Textarea
+          name="content"
+          value={isEditing ? editForm.content : form.content}
+          readOnly={!isEditing}
+          onChange={
+            isEditing
+              ? (e) =>
+                  setEditForm((prev) => ({ ...prev, content: e.target.value }))
+              : undefined
+          }
+        />
 
         {/* 🆕 삭제용 비밀번호 입력칸 */}
-        <Label>비밀번호 (삭제 시 필요)</Label>
+        <Label>게시글 삭제 비밀번호</Label>
         <Input
           type="password"
           value={deletePassword}
           onChange={(e) => setDeletePassword(e.target.value)}
         />
 
-        {/* 비밀번호는 상세 페이지에서 보통 안 보여주니까 주석 처리하거나 제거해도 됨 */}
-        {/* 
-        <Label>비밀번호</Label>
-        <Input
-          type="password"
-          name="password"
-          value={form.password}
-          readOnly
-        />
-        */}
+        {isEditing && (
+          <>
+            <Label>게시글 수정 비밀번호 </Label>
+            <Input
+              type="password"
+              value={editPassword}
+              onChange={(e) => setEditPassword(e.target.value)}
+            />
+          </>
+        )}
 
         <ButtonRow>
-          <Button type="button" onClick={() => navigate("/board")}>
-            목록으로
-          </Button>
-          {/* 삭제 버튼 */}
-          <DeleteButton type="button" onClick={handleDelete}>
-            삭제
-          </DeleteButton>
+          {/* 편집 중이 아닐 떼 */}
+          {/* 목록 버튼 */}
+          {!isEditing && (
+            <>
+              <Button type="button" onClick={() => navigate("/board")}>
+                목록
+              </Button>
+              {/* 수정 버튼 */}
+              <Button type="button" onClick={handleEditStart}>
+                수정
+              </Button>
+              {/* 삭제 버튼 */}
+              <DeleteButton type="button" onClick={handleDelete}>
+                삭제
+              </DeleteButton>
+            </>
+          )}
+
+          {/* 편집 중일 때 */}
+          {isEditing && (
+            <>
+              <Button type="button" onClick={handleEditSave}>
+                저장
+              </Button>
+              <Button type="button" onClick={handleEditCancel}>
+                취소
+              </Button>
+            </>
+          )}
         </ButtonRow>
       </Form>
     </Wrapper>
@@ -196,6 +315,7 @@ const ButtonRow = styled.div`
 `
 
 const Button = styled.button`
+  margin: 5px;
   padding: 12px;
   background-color: #0077ff;
   color: white;

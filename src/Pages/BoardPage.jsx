@@ -3,6 +3,7 @@ import { Typography, Button, Pagination } from "@mui/material"
 import styled from "@emotion/styled"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
+import Stack from "@mui/material/Stack"
 
 const API_BASE_URL = "http://localhost:8000" // ⚠️ 백엔드 주소에 맞게 수정
 
@@ -11,7 +12,7 @@ export default function BoardPage() {
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
   const [page, setPage] = useState(1)
-  const postsPerPage = 10
+  const postsPerPage = 7
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -97,13 +98,17 @@ export default function BoardPage() {
 
         {/* 페이지 번호 */}
         <PaginationWrapper>
-          <Pagination
-            page={page}
-            count={totalPages}
-            onChage={(e, value) => setPage(value)}
-            color="primary"
-            shape="rounded"
-          />
+          <Stack spacing={2}>
+            <Pagination
+              page={page}
+              count={totalPages}
+              onChange={(e, value) => {
+                setPage(value)
+              }}
+              color="primary"
+              shape="rounded"
+            />
+          </Stack>
         </PaginationWrapper>
         <ButtonRow>
           {/* ✅ 글쓰기 버튼에 onClick 추가 */}
