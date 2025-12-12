@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react"
-import { Typography, Button } from "@mui/material"
+import { Typography, Button, Pagination } from "@mui/material"
 import styled from "@emotion/styled"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
@@ -10,6 +10,8 @@ export default function BoardPage() {
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  const [page, setPage] = useState(1)
+  const postsPerPage = 10
   const navigate = useNavigate()
 
   useEffect(() => {
@@ -38,6 +40,10 @@ export default function BoardPage() {
     fetchPosts()
   }, [])
 
+  const totalPages = Math.max(1, Math.ceil(posts.length / postsPerPage))
+  const startIndex = (page - 1) * postsPerPage
+  const endIndex = startIndex + postsPerPage
+
   return (
     <Container>
       <Title>
@@ -61,31 +67,54 @@ export default function BoardPage() {
           {!loading &&
             !error &&
             posts.length > 0 &&
-            posts.map((post) => (
-              <PostRow
-                key={post.ip_id}
-                onClick={() => navigate(`/board/${post.ip_id}`)}
-              >
-                <PostTitle>{post.ip_title}</PostTitle>
-                <PostMeta>
-                  <span>작성자: {post.ip_writer}</span>
-                  <span>조회수: {post.ip_view_count}</span>
-                  <span>
-                    작성일:{" "}
-                    {post.ip_created_at ? post.ip_created_at.slice(0, 10) : "-"}
-                  </span>
-                </PostMeta>
-              </PostRow>
-            ))}
+            posts.map((post, idx) => {
+              // ⭐ 현재 페이지 범위가 아니면 렌더링하지 않음
+              if (idx < startIndex || idx >= endIndex) {
+                return null
+              }
+
+              // ⭐ 범위 안인 것만 실제로 그리기
+              return (
+                <PostRow
+                  key={post.ip_id}
+                  onClick={() => navigate(`/board/${post.ip_id}`)}
+                >
+                  <PostTitle>{post.ip_title}</PostTitle>
+                  <PostMeta>
+                    <span>작성자: {post.ip_writer}</span>
+                    <span>조회수: {post.ip_view_count}</span>
+                    <span>
+                      작성일:{" "}
+                      {post.ip_created_at
+                        ? post.ip_created_at.slice(0, 10)
+                        : "-"}
+                    </span>
+                  </PostMeta>
+                </PostRow>
+              )
+            })}
         </BoardListWrapper>
-        {/* ✅ 글쓰기 버튼에 onClick 추가 */}
-        <Button
-          variant="contained"
-          onClick={() => navigate("/boardwriter")}
-          sx={{ marginLeft: "1rem", height: "40px" }}
-        >
-          글쓰기
-        </Button>
+
+        {/* 페이지 번호 */}
+        <PaginationWrapper>
+          <Pagination
+            page={page}
+            count={totalPages}
+            onChage={(e, value) => setPage(value)}
+            color="primary"
+            shape="rounded"
+          />
+        </PaginationWrapper>
+        <ButtonRow>
+          {/* ✅ 글쓰기 버튼에 onClick 추가 */}
+          <Button
+            variant="contained"
+            onClick={() => navigate("/boardwriter")}
+            sx={{ height: "40px" }}
+          >
+            글쓰기
+          </Button>
+        </ButtonRow>
       </BoxWrap>
     </Container>
   )
@@ -119,6 +148,19 @@ const H6 = styled.h6`
 
 const BoxWrap = styled.div`
   padding: 2em 2em;
+`
+
+const PaginationWrapper = styled.div`
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: center;
+`
+
+// 오른쪽 아래 정렬용 컨테이너
+const ButtonRow = styled.div`
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: flex-end;
 `
 
 const BoardListWrapper = styled.div`

@@ -126,7 +126,7 @@ const Textarea = styled.textarea`
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 15px;
-  height: 120px;
+  height: 200px;
   resize: vertical;
 
   &:focus {

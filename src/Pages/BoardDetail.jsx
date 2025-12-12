@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState, useRef } from "react"
 import styled from "@emotion/styled"
 import axios from "axios"
 import { useNavigate, useParams } from "react-router-dom"
@@ -12,9 +12,13 @@ export default function BoardDetail() {
   })
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState(null)
+  // 삭제용 비밀번호
+  const [deletePassword, setDeletePassword] = useState("")
 
   const navigate = useNavigate()
   const { id } = useParams() // /board/:id
+
+  const hasFetched = useRef(false)
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -42,9 +46,13 @@ export default function BoardDetail() {
       }
     }
 
-    if (id) {
-      fetchPost()
-    }
+    if (!id) return
+
+    // StrictMode 때문에 두 번 실행되는 것을 방지하는 가드
+    if (hasFetched.current) return
+    hasFetched.current = true
+
+    fetchPost()
   }, [id])
 
   if (loading) {
@@ -53,6 +61,34 @@ export default function BoardDetail() {
 
   if (error) {
     return <Wrapper>{error}</Wrapper>
+  }
+
+  const handleDelete = async () => {
+    if (!window.confirm("정말 이 글을 삭제하시겠습니까?")) return
+
+    if (!deletePassword) {
+      alert("비밀번호를 입력하세요.")
+      return
+    }
+
+    try {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/board/${id}`, {
+        // axios의 DELETE 에서 body 보내는 법: data 속성 사용
+        data: { password: deletePassword },
+      })
+      alert("삭제되었습니다.")
+      navigate("/board")
+    } catch (err) {
+      console.error("삭제 오류", err)
+
+      if (err.response && err.response.status === 403) {
+        alert("비밀번호가 일치하지 않습니다.")
+      } else if (err.response && err.response.status === 404) {
+        alert("이미 삭제되었거나 존재하지 않는 글입니다.")
+      } else {
+        alert("삭제 중 오류가 발생했습니다.")
+      }
+    }
   }
 
   return (
@@ -69,6 +105,14 @@ export default function BoardDetail() {
         <Label>내용</Label>
         <Textarea name="content" value={form.content} readOnly />
 
+        {/* 🆕 삭제용 비밀번호 입력칸 */}
+        <Label>비밀번호 (삭제 시 필요)</Label>
+        <Input
+          type="password"
+          value={deletePassword}
+          onChange={(e) => setDeletePassword(e.target.value)}
+        />
+
         {/* 비밀번호는 상세 페이지에서 보통 안 보여주니까 주석 처리하거나 제거해도 됨 */}
         {/* 
         <Label>비밀번호</Label>
@@ -84,6 +128,10 @@ export default function BoardDetail() {
           <Button type="button" onClick={() => navigate("/board")}>
             목록으로
           </Button>
+          {/* 삭제 버튼 */}
+          <DeleteButton type="button" onClick={handleDelete}>
+            삭제
+          </DeleteButton>
         </ButtonRow>
       </Form>
     </Wrapper>
@@ -132,7 +180,7 @@ const Textarea = styled.textarea`
   border: 1px solid #ccc;
   border-radius: 6px;
   font-size: 15px;
-  height: 120px;
+  height: 200px;
   resize: vertical;
   background-color: #f5f5f5;
   &:focus {
@@ -158,5 +206,13 @@ const Button = styled.button`
 
   &:hover {
     background-color: #005fcc;
+  }
+`
+const DeleteButton = styled(Button)`
+  margin-left: 8px;
+  background-color: #e53935;
+
+  &:hover {
+    backgroud-color: #c62828;
   }
 `
