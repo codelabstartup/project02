@@ -3,7 +3,6 @@ import Containers from "./Containers"
 import "./App.css"
 import { ResultDataProvider } from "./context/ResultDataContext"
 
-
 function App() {
   return (
     <BrowserRouter>
