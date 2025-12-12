@@ -2,9 +2,11 @@ import { Routes, Route } from "react-router-dom"
 import styled from "@emotion/styled"
 import HeaderWrapper from "./Components/HeaderWrapper"
 import HomePage from "./Pages/HomePage"
+import BoardPage from "./Pages/BoardPage"
+import BoardWrite from "./Pages/BoardWrite"
+import BoardDetail from "./Pages/BoardDetail"
 import ResultPage from "./Pages/ResultPage"
 import StatusPage from "./Pages/StatusPage"
-import BoardPage from "./Pages/BoardPage"
 import Footer from "./Components/Footer"
 
 const Container = styled.div`
@@ -24,9 +26,11 @@ export default function Containers() {
       <RoutesWrapper>
         <Routes>
           <Route path="/" element={<HomePage />} />
+          <Route path="/board" element={<BoardPage />} />
+          <Route path="/boardwriter" element={<BoardWrite />} />
+          <Route path="/board/:id" element={<BoardDetail />} />
           <Route path="/result" element={<ResultPage />} />
           <Route path="/status" element={<StatusPage />} />
-          <Route path="/board" element={<BoardPage />} />
         </Routes>
       </RoutesWrapper>
       <Footer />
