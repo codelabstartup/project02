@@ -1,6 +1,6 @@
-import { Typography } from "@mui/material";
-import { Link } from "react-router-dom";
-import styled from "@emotion/styled";
+import { Typography } from "@mui/material"
+import { Link } from "react-router-dom"
+import styled from "@emotion/styled"
 
 export default function HeaderWrapper() {
   return (
@@ -37,7 +37,7 @@ export default function HeaderWrapper() {
               },
             }}
           >
-            MARKET
+            DASHBOARD
           </Typography>
         </HeaderWrap2>
         <HeaderWrap3>
@@ -59,7 +59,7 @@ export default function HeaderWrapper() {
         </HeaderWrap3>
       </HeaderBox>
     </HeaderRoot>
-  );
+  )
 }
 
 const HeaderRoot = styled.div`
@@ -74,20 +74,20 @@ const HeaderRoot = styled.div`
   z-index: 999;
   background-color: #a0f1bd;
   margin: auto;
-`;
+`
 
 const HeaderWrap1 = styled.div`
   margin-left: 2em;
-`;
+`
 const HeaderBox = styled.div`
   display: flex;
-`;
+`
 const HeaderWrap2 = styled.div`
   margin-right: 2em;
-`;
+`
 const HeaderWrap3 = styled.div`
   margin-right: 2em;
-`;
+`
 // const HeaderWrap4 = styled.div`
 //   margin-right: 2em;
 // `

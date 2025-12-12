@@ -389,9 +389,9 @@ const CmtContent = styled.div`
 `
 const CmtBox = styled.div`
   width: 80%;
-  background-color: #d2f8dc;
-  font-size: 0.7em;
-  color: white;
+  background-color: #e3f2fd;
+  font-size: 0.75em;
+  color: #333;
   padding: 1em;
   border-radius: 10px;
   margin: auto;
