@@ -5,7 +5,7 @@ import axios from "axios"
 import { useNavigate } from "react-router-dom"
 import Stack from "@mui/material/Stack"
 
-const API_BASE_URL = "http://localhost:8000" // ⚠️ 백엔드 주소에 맞게 수정
+const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:8000" // ⚠️ 백엔드 주소에 맞게 수정
 
 export default function BoardPage() {
   const [posts, setPosts] = useState([])
